@@ -53,7 +53,6 @@ class PassportValidator {
         )
             .setAlgorithmParameterSpec(ECGenParameterSpec("prime256v1"))
             .setDigests(KeyProperties.DIGEST_SHA256)
-            .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_NONE)
             .build()
 
         keyPairGenerator.initialize(parameterSpec)

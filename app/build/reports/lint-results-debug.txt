@@ -1,0 +1,247 @@
+/home/jcgarcia/GitProjects/android-app/app/build.gradle.kts:13: Warning: Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the android.os.Build.VERSION_CODES javadoc for details. [OldTargetApi]
+        targetSdk = 34
+        ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "OldTargetApi":
+   When your application runs on a version of Android that is more recent than
+   your targetSdkVersion specifies that it has been tested with, various
+   compatibility modes kick in. This ensures that your application continues
+   to work, but it may look out of place. For example, if the targetSdkVersion
+   is less than 14, your app may get an option button in the UI.
+
+   To fix this issue, set the targetSdkVersion to the highest available value.
+   Then test your app to make sure everything works correctly. You may want to
+   consult the compatibility notes to see what changes apply to each version
+   you are adding support for:
+   https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
+   as well as follow this guide:
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.
+   html
+
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.html
+
+/home/jcgarcia/GitProjects/android-app/app/src/main/java/com/trustnet/app/SplashActivity.kt:9: Warning: The application should not provide its own launch screen [CustomSplashScreen]
+class SplashActivity : AppCompatActivity() {
+      ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "CustomSplashScreen":
+   Starting in Android 12 (API 31+), the application's Launch Screen is
+   provided by the system and the application should not create its own,
+   otherwise the user will see two splashscreens. Please check the
+   SplashScreen class to check how the Splash Screen can be controlled and
+   customized.
+
+   https://developer.android.com/guide/topics/ui/splash-screen
+
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_splash.xml:7: Warning: Possible overdraw: Root element paints background @color/splash_background with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/splash_background">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/drawable/app_icon_background.xml:2: Warning: The resource R.drawable.app_icon_background appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/values/colors.xml:8: Warning: The resource R.color.purple_200 appears to be unused [UnusedResources]
+    <color name="purple_200">#FFBB86FC</color>
+           ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/drawable/ic_launcher_background.xml:2: Warning: The resource R.drawable.ic_launcher_background appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/drawable/ic_launcher_foreground.xml:2: Warning: The resource R.drawable.ic_launcher_foreground appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/drawable/trustnet_logo.png: Warning: Found bitmap drawable res/drawable/trustnet_logo.png in densityless folder [IconLocation]
+
+   Explanation for issues of type "IconLocation":
+   The res/drawable folder is intended for density-independent graphics such
+   as shapes defined in XML. For bitmaps, move it to drawable-mdpi and
+   consider providing higher and lower resolution versions in drawable-ldpi,
+   drawable-hdpi and drawable-xhdpi. If the icon really is density independent
+   (for example a solid color) you can place it in drawable-nodpi.
+
+   https://developer.android.com/guide/practices/screens_support.html
+
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_main.xml:21: Warning: Missing contentDescription attribute on image [ContentDescription]
+    <ImageView
+     ~~~~~~~~~
+
+   Explanation for issues of type "ContentDescription":
+   Non-textual widgets like ImageViews and ImageButtons should use the
+   contentDescription attribute to specify a textual description of the widget
+   such that screen readers and other accessibility tools can adequately
+   describe the user interface.
+
+   Note that elements in application screens that are purely decorative and do
+   not provide any content or enable a user action should not have
+   accessibility content descriptions. In this case, set their descriptions to
+   @null. If your app's minSdkVersion is 16 or higher, you can instead set
+   these graphical elements' android:importantForAccessibility attributes to
+   no.
+
+   Note that for text fields, you should not set both the hint and the
+   contentDescription attributes since the hint will never be shown. Just set
+   the hint.
+
+   https://developer.android.com/guide/topics/ui/accessibility/apps#special-cases
+
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_main.xml:13: Warning: Hardcoded string "TrustNet Passport Validator", should use @string resource [HardcodedText]
+        android:text="TrustNet Passport Validator"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_main.xml:33: Warning: Hardcoded string "Ready to scan government ID", should use @string resource [HardcodedText]
+        android:text="Ready to scan government ID"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_main.xml:46: Warning: Hardcoded string "Tap to Scan NFC", should use @string resource [HardcodedText]
+        android:text="Tap to Scan NFC"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_main.xml:69: Warning: Hardcoded string "Scan results will appear here", should use @string resource [HardcodedText]
+                android:text="Scan results will appear here"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_main.xml:84: Warning: Hardcoded string "Position NFC tag near device antennanUpper back of device", should use @string resource [HardcodedText]
+        android:text="Position NFC tag near device antenna\nUpper back of device"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:19: Warning: Hardcoded string "TrustNet", should use @string resource [HardcodedText]
+            android:text="TrustNet"
+            ~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:40: Warning: Hardcoded string "Scanned Document Information", should use @string resource [HardcodedText]
+                android:text="Scanned Document Information"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:58: Warning: Hardcoded string "✓ ", should use @string resource [HardcodedText]
+                    android:text="✓ "
+                    ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:66: Warning: Hardcoded string "Successfully detected NFC chip", should use @string resource [HardcodedText]
+                    android:text="Successfully detected NFC chip"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:82: Warning: Hardcoded string "Personal Information", should use @string resource [HardcodedText]
+                    android:text="Personal Information"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:102: Warning: Hardcoded string "First Name", should use @string resource [HardcodedText]
+                            android:text="First Name"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:110: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:124: Warning: Hardcoded string "Last Name", should use @string resource [HardcodedText]
+                            android:text="Last Name"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:132: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:146: Warning: Hardcoded string "Gender", should use @string resource [HardcodedText]
+                            android:text="Gender"
+                            ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:154: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:168: Warning: Hardcoded string "Nationality", should use @string resource [HardcodedText]
+                            android:text="Nationality"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:176: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:194: Warning: Hardcoded string "Document Details", should use @string resource [HardcodedText]
+                    android:text="Document Details"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:209: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                        android:text="Document Number"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:217: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:231: Warning: Hardcoded string "Birth Date", should use @string resource [HardcodedText]
+                        android:text="Birth Date"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:239: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:252: Warning: Hardcoded string "Expiry Date", should use @string resource [HardcodedText]
+                        android:text="Expiry Date"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:260: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:276: Warning: Hardcoded string "ℹ ", should use @string resource [HardcodedText]
+                    android:text="ℹ "
+                    ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:284: Warning: Hardcoded string "Document data is protected. Provide Card Access Number (CAN) to unlock full information.", should use @string resource [HardcodedText]
+                    android:text="Document data is protected. Provide Card Access Number (CAN) to unlock full information."
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:304: Warning: Hardcoded string "SCAN AGAIN", should use @string resource [HardcodedText]
+            android:text="SCAN AGAIN"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+/home/jcgarcia/GitProjects/android-app/app/src/main/res/layout/activity_scan_result.xml:279: Warning: Consider replacing android:layout_marginRight with android:layout_marginEnd="8dp" to better support right-to-left layouts [RtlHardcoded]
+                    android:layout_marginRight="8dp" />
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "RtlHardcoded":
+   Using Gravity#LEFT and Gravity#RIGHT can lead to problems when a layout is
+   rendered in locales where text flows from right to left. Use Gravity#START
+   and Gravity#END instead. Similarly, in XML gravity and layout_gravity
+   attributes, use start rather than left.
+
+   For XML attributes such as paddingLeft and layout_marginLeft, use
+   paddingStart and layout_marginStart. NOTE: If your minSdkVersion is less
+   than 17, you should add both the older left/right attributes as well as the
+   new start/end attributes. On older platforms, where RTL is not supported
+   and the start/end attributes are unknown and therefore ignored, you need
+   the older left/right attributes. There is a separate lint check which
+   catches that type of error.
+
+   (Note: For Gravity#LEFT and Gravity#START, you can use these constants even
+   when targeting older platforms, because the start bitmask is a superset of
+   the left bitmask. Therefore, you can use gravity="start" rather than
+   gravity="left|start".)
+
+0 errors, 39 warnings
