@@ -189,15 +189,16 @@ class MRZParser {
      * Extract document number from MRZ
      * TD3 (Passport) Line 2: Positions 0-8
      * TD1 (ID Card) Line 1: Positions 5-14
+     * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
     fun extractDocumentNumber(mrzText: String, documentType: String): String {
         val lines = mrzText.trim().split("\n")
-            .map { it.trim() }
+            .map { it.trim().replace(" ", "") }  // Remove ALL spaces - MRZ never has spaces
             .filter { it.isNotEmpty() }
         
         Log.d(TAG, "extractDocumentNumber: type=$documentType, lines=${lines.size}")
         for (i in lines.indices) {
-            Log.d(TAG, "  Line $i: '${lines[i]}' (length: ${lines[i].length})")
+            Log.d(TAG, "  Line $i (no spaces): '${lines[i]}' (length: ${lines[i].length})")
         }
         
         val result = when {
@@ -232,15 +233,16 @@ class MRZParser {
      * Extract date of birth from MRZ
      * TD3 (Passport) Line 2: Positions 21-26 (YYMMDD)
      * TD1 (ID Card) Line 2: Positions 0-5 (YYMMDD)
+     * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
     fun extractDateOfBirth(mrzText: String, documentType: String): String {
         val lines = mrzText.trim().split("\n")
-            .map { it.trim() }
+            .map { it.trim().replace(" ", "") }  // Remove ALL spaces - MRZ never has spaces
             .filter { it.isNotEmpty() }
         
         Log.d(TAG, "extractDateOfBirth: type=$documentType, lines=${lines.size}")
         for (i in lines.indices) {
-            Log.d(TAG, "  Line $i: '${lines[i]}' (length: ${lines[i].length})")
+            Log.d(TAG, "  Line $i (no spaces): '${lines[i]}' (length: ${lines[i].length})")
         }
         
         val result = when {
@@ -274,16 +276,17 @@ class MRZParser {
     /**
      * Extract document expiry date from MRZ
      * TD3 (Passport) Line 2: Positions 27-32 (YYMMDD)
-     * TD1 (ID Card) Line 2: Positions 11-16 (YYMMDD)
+     * TD1 (ID Card) Line 2: Positions 7-12 (YYMMDD)
+     * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
     fun extractExpiryDate(mrzText: String, documentType: String): String {
         val lines = mrzText.trim().split("\n")
-            .map { it.trim() }
+            .map { it.trim().replace(" ", "") }  // Remove ALL spaces - MRZ never has spaces
             .filter { it.isNotEmpty() }
         
         Log.d(TAG, "extractExpiryDate: type=$documentType, lines=${lines.size}")
         for (i in lines.indices) {
-            Log.d(TAG, "  Line $i: '${lines[i]}' (length: ${lines[i].length})")
+            Log.d(TAG, "  Line $i (no spaces): '${lines[i]}' (length: ${lines[i].length})")
         }
         
         val result = when {
@@ -298,8 +301,8 @@ class MRZParser {
             }
             documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD1 format for expiry")
-                if (lines.size >= 2 && lines[1].length >= 17) {
-                    lines[1].substring(11, 17)
+                if (lines.size >= 2 && lines[1].length >= 13) {
+                    lines[1].substring(7, 13)
                 } else {
                     Log.w(TAG, "TD1: Not enough data (have ${lines.size} lines, line[1] length=${if (lines.size >= 2) lines[1].length else 0})")
                     ""
