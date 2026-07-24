@@ -6,22 +6,6 @@
     android:orientation="vertical"
     android:background="@color/white">
 
-    <!-- Purple Header -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/purple_500"
-        android:padding="16dp"
-        android:gravity="center">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TrustNet"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
     <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
@@ -269,21 +253,24 @@
                 android:layout_height="wrap_content"
                 android:background="#FFF3E0"
                 android:padding="12dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:id="@+id/errorBox"
+                android:visibility="gone">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ℹ "
+                    android:text="⚠ "
                     android:textSize="16sp"
-                    android:textColor="#E65100"
+                    android:textColor="#D32F2F"
                     android:layout_marginRight="8dp" />
                 <TextView
+                    android:id="@+id/errorMessage"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Document data is protected. Provide Card Access Number (CAN) to unlock full information."
+                    android:text="PACE authentication failed. Please try again."
                     android:textSize="12sp"
-                    android:textColor="#E65100" />
+                    android:textColor="#D32F2F" />
             </LinearLayout>
 
         </LinearLayout>

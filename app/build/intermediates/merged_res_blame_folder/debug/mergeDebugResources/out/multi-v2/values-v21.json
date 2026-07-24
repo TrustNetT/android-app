@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.trustnet.app-mergeDebugResources-29:/values-v21/values-v21.xml",
+            "outputFile": "com.trustnet.app-mergeDebugResources-36:/values-v21/values-v21.xml",
             "map": [
                 {
                     "source": "/home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/res/values-v21/values-v21.xml",

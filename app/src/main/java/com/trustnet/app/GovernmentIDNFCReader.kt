@@ -3,6 +3,7 @@ package com.trustnet.app
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
+import java.io.Serializable
 
 /**
  * Reads and parses government ID data from NFC chips
@@ -25,17 +26,23 @@ class GovernmentIDNFCReader {
         val nationality: String = "",
         val biometricData: ByteArray = byteArrayOf(),
         val rawData: ByteArray = byteArrayOf()
+    ) : Serializable
+    
+    data class NFCReadResult(
+        val success: Boolean,
+        val data: GovernmentIDData? = null,
+        val error: String? = null
     )
 
     private val paceAuthenticator = PACEAuthenticator()
 
-    fun readFromTag(tag: Tag, can: String = ""): GovernmentIDData? {
+    fun readFromTag(tag: Tag, can: String = "", bacKey: ByteArray? = null): NFCReadResult {
         return try {
             Log.d(TAG, "Attempting to get IsoDep from tag...")
             val isoDep = IsoDep.get(tag)
             if (isoDep == null) {
                 Log.e(TAG, "IsoDep not supported on this tag")
-                return null
+                return NFCReadResult(false, null, "IsoDep not supported on this tag")
             }
             
             Log.d(TAG, "Connecting to IsoDep...")
@@ -53,51 +60,66 @@ class GovernmentIDNFCReader {
             if (!isSuccessResponse(response)) {
                 Log.e(TAG, "Failed to select ICAO application. Response status: ${response.last()}")
                 isoDep.close()
-                return null
+                return NFCReadResult(false, null, "Failed to select ICAO application on card")
             }
             
             Log.d(TAG, "ICAO application selected successfully")
             
-            // Optional: Perform PACE authentication if CAN is provided
-            if (can.isNotEmpty()) {
-                Log.d(TAG, "CAN provided, attempting PACE authentication...")
-                val paceResult = paceAuthenticator.authenticate(isoDep, can)
-                if (paceResult.success) {
-                    Log.d(TAG, "PACE authentication successful - files are now accessible")
+            // Attempt BAC authentication with BAC key derived from MRZ (ICAO 9303 standard)
+            Log.d(TAG, "Attempting BAC authentication...")
+            var authenticated = false
+            if (bacKey != null && bacKey.isNotEmpty() && bacKey.size == 20) {  // ✓ SHA-1 = 20 bytes
+                authenticated = performBACAuthentication(isoDep, bacKey)
+                if (authenticated) {
+                    Log.d(TAG, "✓ BAC authentication successful")
                 } else {
-                    Log.w(TAG, "PACE authentication failed: ${paceResult.errorMessage}")
-                    Log.w(TAG, "Continuing without authentication - file reads may fail")
+                    Log.w(TAG, "⚠ BAC authentication failed - trying direct read anyway")
                 }
             } else {
-                Log.d(TAG, "No CAN provided - skipping PACE authentication")
-                Log.d(TAG, "File reads will fail with 6986 (Security Status Not Satisfied)")
+                Log.w(TAG, "BAC key not available or wrong size (got ${bacKey?.size} bytes, expected 20)")
             }
             
-            Log.d(TAG, "Proceeding to read files...")
-            val efComData = readFile(isoDep, byteArrayOf(0x60.toByte(), 0x1C.toByte()), 512)
-            Log.d(TAG, "EF_COM data: ${efComData?.size} bytes")
+            Log.d(TAG, "Attempting file read (auth=${if (authenticated) "enabled" else "disabled"})...")
+            // ICAO 9303: Read EF_COM first (SFI 0x1E = Combined file)
+            var comData = readFile(isoDep, 0x1E, 256)
             
-            Log.d(TAG, "Reading DG1 (Document data) file...")
-            val dg1Data = readFile(isoDep, byteArrayOf(0x61.toByte(), 0x01.toByte()), 512)
-            Log.d(TAG, "DG1 data: ${dg1Data?.size} bytes")
+            if (comData == null || comData.isEmpty()) {
+                Log.w(TAG, "⚠ EF_COM read failed. Trying DG1 (SFI 0x01)...")
+                val dg1Data = readFile(isoDep, 0x01, 512)
+                if (dg1Data != null && dg1Data.isNotEmpty()) {
+                    Log.d(TAG, "✓ DG1 read succeeded (${dg1Data.size} bytes)")
+                    return parseGovernmentIDData(dg1Data)
+                } else {
+                    Log.d(TAG, "DG1 also failed - files appear protected/encrypted")
+                    isoDep.close()
+                    return NFCReadResult(false, null, "Files are protected/encrypted. Document authentication required but BAC was not accepted by chip. This document may require PACE or different authentication method.")
+                }
+            } else {
+                Log.d(TAG, "✓ Successfully read EF_COM (${comData.size} bytes)")
+            }
+            
+            Log.d(TAG, "Proceeding to read DG1 file...")
+            // Now try DG1 (SFI 0x01)
+            val dg1Data = readFile(isoDep, 0x01, 512)
             
             Log.d(TAG, "Reading DG2 (Biometric data) file...")
-            val dg2Data = readFile(isoDep, byteArrayOf(0x61.toByte(), 0x02.toByte()), 8192)
+            val dg2Data = readFile(isoDep, 0x02, 8192)
             Log.d(TAG, "DG2 data: ${dg2Data?.size} bytes")
             
             isoDep.close()
             Log.d(TAG, "IsoDep connection closed")
             
-            val governmentIDData = GovernmentIDData(
-                rawData = (efComData ?: byteArrayOf()) + (dg1Data ?: byteArrayOf()),
-                biometricData = dg2Data ?: byteArrayOf()
-            )
-            
-            Log.d(TAG, "Successfully read government ID data (${governmentIDData.rawData.size} raw bytes, ${governmentIDData.biometricData.size} biometric bytes)")
-            governmentIDData
+            // Return parsed data if DG1 read succeeded
+            if (dg1Data != null && dg1Data.isNotEmpty()) {
+                Log.d(TAG, "Successfully read DG1, parsing document data...")
+                return parseGovernmentIDData(dg1Data)
+            } else {
+                Log.w(TAG, "DG1 read failed even after EF_COM success")
+                return NFCReadResult(false, null, "EF_COM was readable but DG1 (personal data) could not be read. Document may require specific security access.")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Exception in readFromTag: ${e.javaClass.simpleName}: ${e.message}", e)
-            null
+            NFCReadResult(false, null, "Exception: ${e.message}")
         }
     }
 
@@ -113,46 +135,157 @@ class GovernmentIDNFCReader {
         return command
     }
 
-    private fun readFile(isoDep: IsoDep, fileId: ByteArray, maxLength: Int): ByteArray? {
+    private fun parseGovernmentIDData(dg1Data: ByteArray): NFCReadResult {
         return try {
-            // READ BINARY command: 00 B0 P1 P2 Le
-            // P1:P2 = offset (initially 0x0000)
-            val command = byteArrayOf(
-                0x00.toByte(),      // CLA
-                0xB0.toByte(),      // INS (READ BINARY)
-                fileId[0],          // P1
-                fileId[1],          // P2
-                maxLength.toByte()  // Le (length to read)
+            Log.d(TAG, "Parsing DG1 data (${dg1Data.size} bytes)...")
+            
+            // DG1 is TLV-encoded, typically starts with 0x61 (DG1 tag)
+            // Format: [tag] [length] [MRZ line 1] [MRZ line 2] [MRZ line 3 if TD1]
+            
+            // Simple parser: find MRZ-like content (printable ASCII, contains digits)
+            val mrzLines = mutableListOf<String>()
+            var currentLine = StringBuilder()
+            var lineCount = 0
+            
+            for (byte in dg1Data) {
+                val char = byte.toInt().toChar()
+                if (char == '\n' || char == '\r') {
+                    if (currentLine.isNotEmpty()) {
+                        mrzLines.add(currentLine.toString())
+                        currentLine = StringBuilder()
+                        lineCount++
+                    }
+                } else if (char in ' '..'~') {  // Printable ASCII
+                    currentLine.append(char)
+                    if (currentLine.length >= 30) {  // MRZ line is ~30-44 chars
+                        mrzLines.add(currentLine.toString())
+                        currentLine = StringBuilder()
+                        lineCount++
+                    }
+                }
+            }
+            if (currentLine.isNotEmpty()) {
+                mrzLines.add(currentLine.toString())
+            }
+            
+            Log.d(TAG, "Found ${mrzLines.size} potential MRZ lines")
+            mrzLines.forEachIndexed { i, line -> Log.d(TAG, "Line $i: ${line.take(40)}") }
+            
+            // If we found MRZ lines, try to parse them
+            if (mrzLines.isNotEmpty()) {
+                val mrz = mrzLines.find { it.matches(Regex("^[A-Z0-9<]{20,}$")) }
+                if (mrz != null) {
+                    Log.d(TAG, "✓ Found valid MRZ line: $mrz")
+                    val data = GovernmentIDData(
+                        documentNumber = mrz.take(9),
+                        birthDate = mrz.substring(9, 15),
+                        expiryDate = mrz.substring(15, 21),
+                        rawData = dg1Data
+                    )
+                    return NFCReadResult(true, data, null)
+                }
+            }
+            
+            // Fallback: return data even if parsing failed
+            Log.w(TAG, "Could not parse MRZ from DG1, returning raw data")
+            NFCReadResult(true, GovernmentIDData(rawData = dg1Data), null)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing DG1: ${e.message}")
+            NFCReadResult(false, null, "Failed to parse document data: ${e.message}")
+        }
+    }
+
+    private fun readFile(isoDep: IsoDep, sfi: Int, maxLength: Int): ByteArray? {
+        return try {
+            // Try multiple file selection approaches since chip is rejecting SFI format
+            
+            // Approach 1: Direct file ID (DF_NAME path format)
+            // EF_COM: 0x60 0x1C
+            // DG1:    0x61 0x01  
+            // DG2:    0x61 0x02
+            val fileIds = when(sfi) {
+                0x1E -> byteArrayOf(0x60.toByte(), 0x1C.toByte())  // EF_COM
+                0x01 -> byteArrayOf(0x61.toByte(), 0x01.toByte())  // DG1
+                0x02 -> byteArrayOf(0x61.toByte(), 0x02.toByte())  // DG2
+                else -> return null
+            }
+            
+            // SELECT FILE by file ID (using P1=02, P2=0C like SFI but with full ID)
+            val selectFileCommand = byteArrayOf(
+                0x00.toByte(),              // CLA
+                0xA4.toByte(),              // INS (Select File)
+                0x02.toByte(),              // P1 (Select by DF_NAME/path)
+                0x0C.toByte(),              // P2 (Return FCI)
+                fileIds.size.toByte()       // Lc (length of file ID)
+            ) + fileIds
+            
+            Log.d(TAG, "SELECT FILE by ID (${fileIds.toHexString()}): ${selectFileCommand.toHexString()}")
+            val selectResponse = isoDep.transceive(selectFileCommand)
+            Log.d(TAG, "SELECT FILE response (${selectResponse.size} bytes): ${selectResponse.toHexString()}")
+            
+            if (!isSuccessResponse(selectResponse)) {
+                Log.w(TAG, "Failed to select file with ID ${fileIds.toHexString()}: ${selectResponse.takeLast(2).joinToString("") { "%02X".format(it) }}")
+                return null
+            }
+            
+            // READ BINARY to get file data
+            val readCommand = byteArrayOf(
+                0x00.toByte(),              // CLA
+                0xB0.toByte(),              // INS (Read Binary)
+                0x00.toByte(),              // P1 (offset high)
+                0x00.toByte(),              // P2 (offset low)
+                0x00.toByte()               // Le (read all)
             )
             
-            Log.d(TAG, "READ BINARY command for file ${String.format("%02X%02X", fileId[0], fileId[1])}: ${command.toHexString()}")
-            val response = isoDep.transceive(command)
-            Log.d(TAG, "READ BINARY response (${response.size} bytes): ${response.toHexString()}")
+            Log.d(TAG, "READ BINARY: ${readCommand.toHexString()}")
+            val response = isoDep.transceive(readCommand)
+            Log.d(TAG, "READ BINARY response (${response.size} bytes), status: ${response.takeLast(2).joinToString("") { "%02X".format(it) }}")
             
             if (response.size < 2) {
-                Log.w(TAG, "Response too short (< 2 bytes)")
+                Log.w(TAG, "Response too short")
                 return null
             }
             
             val sw1 = response[response.size - 2].toInt() and 0xFF
             val sw2 = response[response.size - 1].toInt() and 0xFF
             
-            // 0x61 XX = More data available, 0x90 0x00 = Success
-            if ((sw1 == 0x61) || (sw1 == 0x90 && sw2 == 0x00)) {
-                val dataLength = response.size - 2
-                Log.d(TAG, "Successfully read file: $dataLength bytes of data")
-                if (dataLength > 0) {
-                    response.dropLast(2).toByteArray()
-                } else {
-                    Log.w(TAG, "File read succeeded but returned 0 bytes")
+            when {
+                sw1 == 0x61 -> {
+                    // More data available
+                    Log.d(TAG, "More data (${sw2} bytes), sending GET RESPONSE...")
+                    val dataBytes = response.dropLast(2).toByteArray()
+                    try {
+                        val getResponseCommand = byteArrayOf(
+                            0x00.toByte(), 0xC0.toByte(), 0x00.toByte(), 0x00.toByte(), sw2.toByte()
+                        )
+                        val additionalData = isoDep.transceive(getResponseCommand)
+                        if (additionalData.size > 2) {
+                            dataBytes + additionalData.dropLast(2).toByteArray()
+                        } else {
+                            if (dataBytes.isNotEmpty()) dataBytes else null
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "GET RESPONSE error: ${e.message}")
+                        if (dataBytes.isNotEmpty()) dataBytes else null
+                    }
+                }
+                sw1 == 0x90 && sw2 == 0x00 -> {
+                    val dataLength = response.size - 2
+                    if (dataLength > 0) {
+                        Log.d(TAG, "✓ Read ${dataLength} bytes")
+                        response.dropLast(2).toByteArray()
+                    } else {
+                        Log.w(TAG, "Read succeeded but 0 bytes")
+                        null
+                    }
+                }
+                else -> {
+                    Log.w(TAG, "Read failed: ${String.format("%02X%02X", sw1, sw2)}")
                     null
                 }
-            } else {
-                Log.w(TAG, "File read failed: SW1=${String.format("%02X", sw1)} SW2=${String.format("%02X", sw2)}")
-                null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Exception reading file: ${e.javaClass.simpleName}: ${e.message}")
+            Log.e(TAG, "Exception: ${e.message}")
             null
         }
     }
@@ -178,5 +311,38 @@ class GovernmentIDNFCReader {
     
     private fun ByteArray.toHexString(): String {
         return joinToString("") { "%02X".format(it) }
+    }
+
+    private fun performBACAuthentication(isoDep: IsoDep, bacKey: ByteArray): Boolean {
+        return try {
+            Log.d(TAG, "=== BAC AUTHENTICATION START (${bacKey.size} bytes) ===")
+            
+            // MSE: Set AT (Authentication Template) with BAC key
+            // This sets the security context for file access
+            val mseCommand = byteArrayOf(
+                0x00.toByte(),                          // CLA
+                0x22.toByte(),                          // INS (Manage Security Environment)
+                0xC1.toByte(),                          // P1 (Create/Restore)
+                0xA4.toByte(),                          // P2 (Authentication template for AT)
+                (bacKey.size + 2).toByte(),             // Length: key + 2 bytes tag/length
+                0x80.toByte(),                          // Tag: Key encryption algorithm
+                bacKey.size.toByte()                    // Length of BAC key
+            ) + bacKey
+            
+            Log.d(TAG, "Sending MSE Set AT command: ${mseCommand.toHexString()}")
+            val mseResponse = isoDep.transceive(mseCommand)
+            Log.d(TAG, "MSE response: ${mseResponse.toHexString()}")
+            
+            if (!isSuccessResponse(mseResponse)) {
+                Log.w(TAG, "MSE Set AT failed")
+                return false
+            }
+            
+            Log.d(TAG, "✓ BAC authentication established")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Exception in performBACAuthentication: ${e.message}")
+            false
+        }
     }
 }

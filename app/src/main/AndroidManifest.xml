@@ -8,6 +8,12 @@
         android:name="android.hardware.nfc"
         android:required="true" />
 
+    <!-- Camera Permissions -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -45,6 +51,26 @@
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
+
+        <!-- Document Type Selection Activity -->
+        <activity
+            android:name=".DocumentTypeActivity"
+            android:exported="false" />
+
+        <!-- Camera Activity for capturing document and extracting CAN -->
+        <activity
+            android:name=".CameraActivity"
+            android:exported="false" />
+
+        <!-- Confirmation Activity for verifying and editing extracted MRZ data -->
+        <activity
+            android:name=".ConfirmationActivity"
+            android:exported="false" />
+
+        <!-- NFC Scanning Activity (uses app-controlled NfcAdapter.enableReaderMode) -->
+        <activity
+            android:name=".NFCProgressActivity"
+            android:exported="false" />
 
     </application>
 

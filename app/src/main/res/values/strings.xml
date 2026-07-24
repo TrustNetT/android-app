@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">TrustNet</string>
     <string name="splash_subtitle">Decentralized Trust Network</string>
+    <string name="preview_image">Document preview</string>
 </resources>

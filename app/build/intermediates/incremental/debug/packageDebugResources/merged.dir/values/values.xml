@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#000000</color>
+    <color name="card_background">#F5F5F5</color>
+    <color name="card_border">#E0E0E0</color>
+    <color name="gray">#999999</color>
+    <color name="green">#00C853</color>
+    <color name="light_gray">#CCCCCC</color>
+    <color name="primary">#1976D2</color>
+    <color name="primary_blue">#1976D2</color>
+    <color name="purple">#6200EE</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="red_500">#FFFF5252</color>
+    <color name="secondary">#424242</color>
     <color name="splash_background">#ffffff</color>
     <color name="splash_text">#000000</color>
     <color name="splash_text_secondary">#666666</color>
@@ -12,6 +21,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFF</color>
     <string name="app_name">TrustNet</string>
+    <string name="preview_image">Document preview</string>
     <string name="splash_subtitle">Decentralized Trust Network</string>
     <style name="Theme.TrustNetApp" parent="Theme.MaterialComponents.Light.DarkActionBar">
         
