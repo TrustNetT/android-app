@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import androidx.lifecycle.lifecycleScope
 import com.trustnet.nfc.JmrtdPassportReaderPace
+import com.trustnet.nfc.PassportReaderTD3
+import com.trustnet.nfc.PassportData
 import kotlinx.coroutines.launch
 
 /**
@@ -32,7 +34,8 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
     }
     
     private lateinit var nfcAdapter: NfcAdapter
-    private lateinit var jmrtdReader: JmrtdPassportReaderPace
+    private var readerTD3: PassportReaderTD3? = null
+    private var readerPace: JmrtdPassportReaderPace? = null
     private lateinit var statusTextView: TextView
     private lateinit var progressBar: ProgressBar
     
@@ -70,7 +73,21 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
             return
         }
         
-        jmrtdReader = JmrtdPassportReaderPace()
+        // Route to correct reader based on document type
+        when (documentType.uppercase()) {
+            "PASSPORT" -> {
+                Log.d(TAG, "→ Using TD3 PASSPORT reader (BAC authentication)")
+                readerTD3 = PassportReaderTD3()
+            }
+            "ID", "ID_CARD" -> {
+                Log.d(TAG, "→ Using TD1 ID CARD reader (PACE authentication)")
+                readerPace = JmrtdPassportReaderPace()
+            }
+            else -> {
+                Log.w(TAG, "Unknown document type: $documentType - defaulting to ID CARD (PACE)")
+                readerPace = JmrtdPassportReaderPace()
+            }
+        }
         
         // Get view references
         statusTextView = findViewById(R.id.statusTextView)
@@ -182,9 +199,23 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
                 Log.d(TAG, "  Doc Number: '$documentNumber'")
                 Log.d(TAG, "  DOB: '$dateOfBirth'")
                 Log.d(TAG, "  Expiry: '$dateOfExpiry'")
+                Log.d(TAG, "  Document Type: '$documentType'")
                 
-                // Read passport data using BAC authentication
-                val passportData = jmrtdReader.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry)
+                // Read passport data using appropriate authentication method
+                val passportData = when {
+                    readerTD3 != null -> {
+                        Log.d(TAG, "Reading via TD3 BAC reader...")
+                        readerTD3!!.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry)
+                    }
+                    readerPace != null -> {
+                        Log.d(TAG, "Reading via TD1 PACE reader...")
+                        readerPace!!.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry)
+                    }
+                    else -> PassportData(
+                        success = false,
+                        error = "No reader initialized for document type: $documentType"
+                    )
+                }
                 
                 if (passportData.success) {
                     Log.d(TAG, "✓✓✓ Passport read SUCCESSFUL from chip ✓✓✓")

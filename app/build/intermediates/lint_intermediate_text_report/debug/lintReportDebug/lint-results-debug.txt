@@ -1,0 +1,684 @@
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/build.gradle.kts:13: Warning: Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the android.os.Build.VERSION_CODES javadoc for details. [OldTargetApi]
+        targetSdk = 34
+        ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "OldTargetApi":
+   When your application runs on a version of Android that is more recent than
+   your targetSdkVersion specifies that it has been tested with, various
+   compatibility modes kick in. This ensures that your application continues
+   to work, but it may look out of place. For example, if the targetSdkVersion
+   is less than 14, your app may get an option button in the UI.
+
+   To fix this issue, set the targetSdkVersion to the highest available value.
+   Then test your app to make sure everything works correctly. You may want to
+   consult the compatibility notes to see what changes apply to each version
+   you are adding support for:
+   https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
+   as well as follow this guide:
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.
+   html
+
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.html
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/SplashActivity.kt:9: Warning: The application should not provide its own launch screen [CustomSplashScreen]
+class SplashActivity : AppCompatActivity() {
+      ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "CustomSplashScreen":
+   Starting in Android 12 (API 31+), the application's Launch Screen is
+   provided by the system and the application should not create its own,
+   otherwise the user will see two splashscreens. Please check the
+   SplashScreen class to check how the Splash Screen can be controlled and
+   customized.
+
+   https://developer.android.com/guide/topics/ui/splash-screen
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/nfc/crypto/PaceCryptoUtils.kt:57: Warning: The BC provider is deprecated and as of Android P this method will throw a NoSuchAlgorithmException. To fix this you should stop specifying a provider and use the default implementation [DeprecatedProvider]
+            val cipher = Cipher.getInstance("AES/ECB/NoPadding", PROVIDER)
+                                                                 ~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/nfc/crypto/PaceCryptoUtils.kt:70: Warning: The BC provider is deprecated and as of Android P this method will throw a NoSuchAlgorithmException. To fix this you should stop specifying a provider and use the default implementation [DeprecatedProvider]
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", PROVIDER)
+                                                                    ~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/nfc/crypto/PaceCryptoUtils.kt:81: Warning: The BC provider is deprecated and as of Android P this method will throw a NoSuchAlgorithmException. To fix this you should stop specifying a provider and use the default implementation [DeprecatedProvider]
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", PROVIDER)
+                                                                    ~~~~~~~~
+
+   Explanation for issues of type "DeprecatedProvider":
+   The BC provider has been deprecated and will not be provided when
+   targetSdkVersion is P or higher.
+
+   https://android-developers.googleblog.com/2018/03/cryptography-changes-in-android-p.html
+   https://goo.gle/DeprecatedProvider
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/nfc/crypto/PaceCryptoUtils.kt:57: Warning: ECB encryption mode should not be used [GetInstance]
+            val cipher = Cipher.getInstance("AES/ECB/NoPadding", PROVIDER)
+                                             ~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "GetInstance":
+   Cipher#getInstance should not be called with ECB as the cipher mode or
+   without setting the cipher mode because the default mode on android is ECB,
+   which is insecure.
+
+   https://goo.gle/GetInstance
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/DocumentAlignmentOverlayView.kt:91: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val frameRect = RectF(frameLeft, frameTop, frameRight, frameBottom)
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "DrawAllocation":
+   You should avoid allocating objects during a drawing or layout operation.
+   These are called frequently, so a smooth UI can be interrupted by garbage
+   collection pauses caused by the object allocations.
+
+   The way this is generally handled is to allocate the needed objects up
+   front and to reuse them for each drawing operation.
+
+   Some methods allocate memory on your behalf (such as Bitmap.create), and
+   these should be handled in the same way.
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_camera.xml:7: Warning: Possible overdraw: Root element paints background @color/black with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/black">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:7: Warning: Possible overdraw: Root element paints background #FFFFFF with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="#FFFFFF">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_type.xml:6: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_nfc_progress.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_splash.xml:7: Warning: Possible overdraw: Root element paints background @color/splash_background with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/splash_background">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:2: Warning: The resource R.layout.activity_confirmation appears to be unused [UnusedResources]
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:2: Warning: The resource R.layout.activity_document_confirmation appears to be unused [UnusedResources]
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_main.xml:2: Warning: The resource R.layout.activity_main appears to be unused [UnusedResources]
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/app_icon_background.xml:2: Warning: The resource R.drawable.app_icon_background appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/button_filled.xml:2: Warning: The resource R.drawable.button_filled appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/button_outline.xml:2: Warning: The resource R.drawable.button_outline appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/colors.xml:8: Warning: The resource R.color.purple_200 appears to be unused [UnusedResources]
+    <color name="purple_200">#FFBB86FC</color>
+           ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/colors.xml:18: Warning: The resource R.color.purple appears to be unused [UnusedResources]
+    <color name="purple">#6200EE</color>
+           ~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/colors.xml:19: Warning: The resource R.color.green appears to be unused [UnusedResources]
+    <color name="green">#00C853</color>
+           ~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/colors.xml:21: Warning: The resource R.color.light_gray appears to be unused [UnusedResources]
+    <color name="light_gray">#CCCCCC</color>
+           ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/colors.xml:22: Warning: The resource R.color.primary_blue appears to be unused [UnusedResources]
+    <color name="primary_blue">#1976D2</color>
+           ~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/colors.xml:27: Warning: The resource R.color.card_background appears to be unused [UnusedResources]
+    <color name="card_background">#F5F5F5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/colors.xml:28: Warning: The resource R.color.card_border appears to be unused [UnusedResources]
+    <color name="card_border">#E0E0E0</color>
+           ~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/edit_text_background.xml:2: Warning: The resource R.drawable.edit_text_background appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/edit_text_border.xml:2: Warning: The resource R.drawable.edit_text_border appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/ic_launcher_background.xml:2: Warning: The resource R.drawable.ic_launcher_background appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/ic_launcher_foreground.xml:2: Warning: The resource R.drawable.ic_launcher_foreground appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/xml/provider_paths.xml:2: Warning: The resource R.xml.provider_paths appears to be unused [UnusedResources]
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/values/strings.xml:5: Warning: The resource R.string.preview_image appears to be unused [UnusedResources]
+    <string name="preview_image">Document preview</string>
+            ~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/text_view_background.xml:2: Warning: The resource R.drawable.text_view_background appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+^
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/drawable/trustnet_logo.png: Warning: Found bitmap drawable res/drawable/trustnet_logo.png in densityless folder [IconLocation]
+
+   Explanation for issues of type "IconLocation":
+   The res/drawable folder is intended for density-independent graphics such
+   as shapes defined in XML. For bitmaps, move it to drawable-mdpi and
+   consider providing higher and lower resolution versions in drawable-ldpi,
+   drawable-hdpi and drawable-xhdpi. If the icon really is density independent
+   (for example a solid color) you can place it in drawable-nodpi.
+
+   https://developer.android.com/guide/practices/screens_support.html
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:258: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:271: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:130: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:140: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:182: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:192: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+
+   Explanation for issues of type "ButtonStyle":
+   Button bars typically use a borderless style for the buttons. Set the
+   style="?android:attr/buttonBarButtonStyle" attribute on each of the
+   buttons, and set style="?android:attr/buttonBarStyle" on the parent layout
+
+   https://d.android.com/r/studio-ui/designer/material/dialogs
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:51: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:71: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:91: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:111: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:69: Warning: Missing autofillHints attribute [Autofill]
+                <EditText
+                 ~~~~~~~~
+
+   Explanation for issues of type "Autofill":
+   Specify an autofillHints attribute when targeting SDK version 26 or higher
+   or explicitly specify that the view is not important for autofill. Your app
+   can help an autofill service classify the data correctly by providing the
+   meaning of each view that could be autofillable, such as views representing
+   usernames, passwords, credit card fields, email addresses, etc.
+
+   The hints can have any value, but it is recommended to use predefined
+   values like 'username' for a username or 'creditCardNumber' for a credit
+   card number. For a list of all predefined autofill hint constants, see the
+   AUTOFILL_HINT_ constants in the View reference at
+   https://developer.android.com/reference/android/view/View.html.
+
+   You can mark a view unimportant for autofill by specifying an
+   importantForAutofill attribute on that view or a parent view. See
+   https://developer.android.com/reference/android/view/View.html#setImportant
+   ForAutofill(int).
+
+   https://developer.android.com/guide/topics/text/autofill.html
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_main.xml:21: Warning: Missing contentDescription attribute on image [ContentDescription]
+    <ImageView
+     ~~~~~~~~~
+
+   Explanation for issues of type "ContentDescription":
+   Non-textual widgets like ImageViews and ImageButtons should use the
+   contentDescription attribute to specify a textual description of the widget
+   such that screen readers and other accessibility tools can adequately
+   describe the user interface.
+
+   Note that elements in application screens that are purely decorative and do
+   not provide any content or enable a user action should not have
+   accessibility content descriptions. In this case, set their descriptions to
+   @null. If your app's minSdkVersion is 16 or higher, you can instead set
+   these graphical elements' android:importantForAccessibility attributes to
+   no.
+
+   Note that for text fields, you should not set both the hint and the
+   contentDescription attributes since the hint will never be shown. Just set
+   the hint.
+
+   https://developer.android.com/guide/topics/ui/accessibility/apps#special-cases
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:76: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        titleTextView.text = "Capture $documentType Document"
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:76: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        titleTextView.text = "Capture $documentType Document"
+                              ~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:76: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        titleTextView.text = "Capture $documentType Document"
+                                                   ~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:144: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "Position document in frame..."
+                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:152: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                    statusTextView.text = "Camera binding failed: ${exc.message}"
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:152: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "Camera binding failed: ${exc.message}"
+                                           ~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:158: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                statusTextView.text = "Camera initialization failed: ${exc.message}"
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:158: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "Camera initialization failed: ${exc.message}"
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:248: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                        statusTextView.text = "✓ Document captured!\nReview information..."
+                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:248: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                        statusTextView.text = "✓ Document captured!\nReview information..."
+                                               ~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/CameraActivity.kt:248: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                        statusTextView.text = "✓ Document captured!\nReview information..."
+                                                                     ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/ConfirmationActivity.kt:122: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                docNumberView.text = "(not detected)"
+                                      ~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/ConfirmationActivity.kt:132: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                dobView.text = "(not detected)"
+                                ~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/ConfirmationActivity.kt:142: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                expiryView.text = "(not detected)"
+                                   ~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/MainActivity.kt:115: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                errorMessage.text = "PACE authentication failed: $paceError"
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/MainActivity.kt:115: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                errorMessage.text = "PACE authentication failed: $paceError"
+                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/MainActivity.kt:117: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                errorMessage.text = "No data could be read from the NFC chip. Please try again."
+                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:97: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        titleTextView.text = "Scan NFC Chip"
+                              ~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:102: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = "✓ BAC authenticated\nReady to scan NFC\n\nHold phone over NFC chip..."
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:102: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "✓ BAC authenticated\nReady to scan NFC\n\nHold phone over NFC chip..."
+                                   ~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:102: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "✓ BAC authenticated\nReady to scan NFC\n\nHold phone over NFC chip..."
+                                                        ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:102: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "✓ BAC authenticated\nReady to scan NFC\n\nHold phone over NFC chip..."
+                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:105: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = "Ready to scan NFC\n\nHold phone over NFC to read chip..."
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:105: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "Ready to scan NFC\n\nHold phone over NFC to read chip..."
+                                   ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:105: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "Ready to scan NFC\n\nHold phone over NFC to read chip..."
+                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:143: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                statusTextView.text = "✓ NFC Ready\n\nHold phone over NFC chip..."
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:143: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "✓ NFC Ready\n\nHold phone over NFC chip..."
+                                       ~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:143: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "✓ NFC Ready\n\nHold phone over NFC chip..."
+                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:146: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "NFC is disabled"
+                                       ~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:150: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = "Error: ${e.message}"
+                                  ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:150: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "Error: ${e.message}"
+                                   ~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:194: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "Authenticating with BAC..."
+                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:244: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                        statusTextView.text = "❌ Read failed:\n${passportData.error}"
+                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:244: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                        statusTextView.text = "❌ Read failed:\n${passportData.error}"
+                                               ~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:253: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                    statusTextView.text = "❌ Error:\n${e.message}"
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/java/com/trustnet/app/NFCProgressActivity.kt:253: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "❌ Error:\n${e.message}"
+                                           ~~~~~~~~
+
+   Explanation for issues of type "SetTextI18n":
+   When calling TextView#setText
+   * Never call Number#toString() to format numbers; it will not handle
+   fraction separators and locale-specific digits properly. Consider using
+   String#format with proper format specifications (%d or %f) instead.
+   * Do not pass a string literal (e.g. "Hello") to display text. Hardcoded
+   text can not be properly translated to other languages. Consider using
+   Android resource strings instead.
+   * Do not build messages by concatenating text chunks. Such messages can not
+   be properly translated.
+
+   https://developer.android.com/guide/topics/resources/localization.html
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_camera.xml:14: Warning: Hardcoded string "Capture Document", should use @string resource [HardcodedText]
+        android:text="Capture Document"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_camera.xml:62: Warning: Hardcoded string "Position document in frame...", should use @string resource [HardcodedText]
+            android:text="Position document in frame..."
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:20: Warning: Hardcoded string "Verify Document Information", should use @string resource [HardcodedText]
+            android:text="Verify Document Information"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:28: Warning: Hardcoded string "Please verify the MRZ extracted from your document matches the physical document", should use @string resource [HardcodedText]
+            android:text="Please verify the MRZ extracted from your document matches the physical document"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:60: Warning: Hardcoded string "MRZ Line 1", should use @string resource [HardcodedText]
+                    android:text="MRZ Line 1"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:69: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:91: Warning: Hardcoded string "MRZ Line 2", should use @string resource [HardcodedText]
+                    android:text="MRZ Line 2"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:100: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:122: Warning: Hardcoded string "MRZ Line 3", should use @string resource [HardcodedText]
+                    android:text="MRZ Line 3"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:131: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:143: Warning: Hardcoded string "(Optional - Some documents have a third line)", should use @string resource [HardcodedText]
+                    android:text="(Optional - Some documents have a third line)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:162: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                    android:text="Document Number"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:171: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:191: Warning: Hardcoded string "Date of Birth (YYMMDD)", should use @string resource [HardcodedText]
+                    android:text="Date of Birth (YYMMDD)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:200: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:220: Warning: Hardcoded string "Date of Expiry (YYMMDD)", should use @string resource [HardcodedText]
+                    android:text="Date of Expiry (YYMMDD)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:229: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:239: Warning: Hardcoded string "BAC (Basic Access Control) uses these three values to derive encryption keys for chip authentication.", should use @string resource [HardcodedText]
+                    android:text="BAC (Basic Access Control) uses these three values to derive encryption keys for chip authentication."
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:264: Warning: Hardcoded string "Retry", should use @string resource [HardcodedText]
+            android:text="Retry"
+            ~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:276: Warning: Hardcoded string "Confirm & Continue", should use @string resource [HardcodedText]
+            android:text="Confirm &amp; Continue"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:14: Warning: Hardcoded string "Verify Document Information", should use @string resource [HardcodedText]
+        android:text="Verify Document Information"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:24: Warning: Hardcoded string "Please review the extracted information. Edit any fields if needed, then tap Confirm to continue.", should use @string resource [HardcodedText]
+        android:text="Please review the extracted information. Edit any fields if needed, then tap Confirm to continue."
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:45: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                android:text="Document Number"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:55: Warning: Hardcoded string "Enter document number", should use @string resource [HardcodedText]
+                android:hint="Enter document number"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:65: Warning: Hardcoded string "Date of Birth (YYMMDD)", should use @string resource [HardcodedText]
+                android:text="Date of Birth (YYMMDD)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:75: Warning: Hardcoded string "YYMMDD (e.g., 290729)", should use @string resource [HardcodedText]
+                android:hint="YYMMDD (e.g., 290729)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:85: Warning: Hardcoded string "Expiry Date (YYMMDD)", should use @string resource [HardcodedText]
+                android:text="Expiry Date (YYMMDD)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:95: Warning: Hardcoded string "YYMMDD (e.g., 810409)", should use @string resource [HardcodedText]
+                android:hint="YYMMDD (e.g., 810409)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:105: Warning: Hardcoded string "CAN (optional)", should use @string resource [HardcodedText]
+                android:text="CAN (optional)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:115: Warning: Hardcoded string "Card Access Number (optional)", should use @string resource [HardcodedText]
+                android:hint="Card Access Number (optional)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:135: Warning: Hardcoded string "Back to Camera", should use @string resource [HardcodedText]
+            android:text="Back to Camera"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_confirmation.xml:145: Warning: Hardcoded string "Confirm - Scan NFC", should use @string resource [HardcodedText]
+            android:text="Confirm - Scan NFC"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:14: Warning: Hardcoded string "Confirm Document Information", should use @string resource [HardcodedText]
+        android:text="Confirm Document Information"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:26: Warning: Hardcoded string "✓ Document scanned successfully", should use @string resource [HardcodedText]
+        android:text="✓ Document scanned successfully"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:49: Warning: Hardcoded string "Captured document", should use @string resource [HardcodedText]
+                android:contentDescription="Captured document"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:63: Warning: Hardcoded string "Card Access Number (CAN)", should use @string resource [HardcodedText]
+                    android:text="Card Access Number (CAN)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:74: Warning: Hardcoded string "Enter 6-character CAN", should use @string resource [HardcodedText]
+                    android:hint="Enter 6-character CAN"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:94: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                    android:text="Document Number"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:123: Warning: Hardcoded string "Date of Birth", should use @string resource [HardcodedText]
+                    android:text="Date of Birth"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:152: Warning: Hardcoded string "Expiry Date", should use @string resource [HardcodedText]
+                    android:text="Expiry Date"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:187: Warning: Hardcoded string "Retake", should use @string resource [HardcodedText]
+            android:text="Retake"
+            ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_confirmation.xml:197: Warning: Hardcoded string "Confirm & Continue", should use @string resource [HardcodedText]
+            android:text="Confirm &amp; Continue"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_type.xml:19: Warning: Hardcoded string "Select document type", should use @string resource [HardcodedText]
+            android:text="Select document type"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_type.xml:30: Warning: Hardcoded string "Identity Card", should use @string resource [HardcodedText]
+            android:text="Identity Card"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_document_type.xml:41: Warning: Hardcoded string "Passport", should use @string resource [HardcodedText]
+            android:text="Passport"
+            ~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_main.xml:13: Warning: Hardcoded string "TrustNet Passport Validator", should use @string resource [HardcodedText]
+        android:text="TrustNet Passport Validator"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_main.xml:33: Warning: Hardcoded string "Ready to scan government ID", should use @string resource [HardcodedText]
+        android:text="Ready to scan government ID"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_main.xml:46: Warning: Hardcoded string "Tap to Scan NFC", should use @string resource [HardcodedText]
+        android:text="Tap to Scan NFC"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_main.xml:69: Warning: Hardcoded string "Scan results will appear here", should use @string resource [HardcodedText]
+                android:text="Scan results will appear here"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_main.xml:84: Warning: Hardcoded string "Position NFC tag near device antennanUpper back of device", should use @string resource [HardcodedText]
+        android:text="Position NFC tag near device antenna\nUpper back of device"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_nfc_progress.xml:15: Warning: Hardcoded string "Ready to Scan NFC", should use @string resource [HardcodedText]
+        android:text="Ready to Scan NFC"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_nfc_progress.xml:26: Warning: Hardcoded string "📱", should use @string resource [HardcodedText]
+        android:text="📱"
+        ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_nfc_progress.xml:35: Warning: Hardcoded string "Place phone on NFC chip to scan", should use @string resource [HardcodedText]
+        android:text="Place phone on NFC chip to scan"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_nfc_progress.xml:54: Warning: Hardcoded string "Start NFC Scan", should use @string resource [HardcodedText]
+        android:text="Start NFC Scan"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:24: Warning: Hardcoded string "Scanned Document Information", should use @string resource [HardcodedText]
+                android:text="Scanned Document Information"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:42: Warning: Hardcoded string "✓ ", should use @string resource [HardcodedText]
+                    android:text="✓ "
+                    ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:50: Warning: Hardcoded string "Successfully detected NFC chip", should use @string resource [HardcodedText]
+                    android:text="Successfully detected NFC chip"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:66: Warning: Hardcoded string "Personal Information", should use @string resource [HardcodedText]
+                    android:text="Personal Information"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:86: Warning: Hardcoded string "First Name", should use @string resource [HardcodedText]
+                            android:text="First Name"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:94: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:108: Warning: Hardcoded string "Last Name", should use @string resource [HardcodedText]
+                            android:text="Last Name"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:116: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:130: Warning: Hardcoded string "Gender", should use @string resource [HardcodedText]
+                            android:text="Gender"
+                            ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:138: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:152: Warning: Hardcoded string "Nationality", should use @string resource [HardcodedText]
+                            android:text="Nationality"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:160: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:178: Warning: Hardcoded string "Document Details", should use @string resource [HardcodedText]
+                    android:text="Document Details"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:193: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                        android:text="Document Number"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:201: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:215: Warning: Hardcoded string "Birth Date", should use @string resource [HardcodedText]
+                        android:text="Birth Date"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:223: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:236: Warning: Hardcoded string "Expiry Date", should use @string resource [HardcodedText]
+                        android:text="Expiry Date"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:244: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:262: Warning: Hardcoded string "⚠ ", should use @string resource [HardcodedText]
+                    android:text="⚠ "
+                    ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:271: Warning: Hardcoded string "PACE authentication failed. Please try again.", should use @string resource [HardcodedText]
+                    android:text="PACE authentication failed. Please try again."
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:291: Warning: Hardcoded string "SCAN AGAIN", should use @string resource [HardcodedText]
+            android:text="SCAN AGAIN"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+/home/jcgarcia/GitProjects/TrustNet/android-app/app/src/main/res/layout/activity_scan_result.xml:265: Warning: Consider replacing android:layout_marginRight with android:layout_marginEnd="8dp" to better support right-to-left layouts [RtlHardcoded]
+                    android:layout_marginRight="8dp" />
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "RtlHardcoded":
+   Using Gravity#LEFT and Gravity#RIGHT can lead to problems when a layout is
+   rendered in locales where text flows from right to left. Use Gravity#START
+   and Gravity#END instead. Similarly, in XML gravity and layout_gravity
+   attributes, use start rather than left.
+
+   For XML attributes such as paddingLeft and layout_marginLeft, use
+   paddingStart and layout_marginStart. NOTE: If your minSdkVersion is less
+   than 17, you should add both the older left/right attributes as well as the
+   new start/end attributes. On older platforms, where RTL is not supported
+   and the start/end attributes are unknown and therefore ignored, you need
+   the older left/right attributes. There is a separate lint check which
+   catches that type of error.
+
+   (Note: For Gravity#LEFT and Gravity#START, you can use these constants even
+   when targeting older platforms, because the start bitmask is a superset of
+   the left bitmask. Therefore, you can use gravity="start" rather than
+   gravity="left|start".)
+
+0 errors, 161 warnings

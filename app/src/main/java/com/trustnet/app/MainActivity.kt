@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     }
     
     private lateinit var nfcAdapter: NfcAdapter
-    private val nfcReader = GovernmentIDNFCReader()
     private val passportValidator = PassportValidator()
     
     // View references
