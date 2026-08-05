@@ -86,13 +86,21 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
             return
         }
         
-        // Route to correct reader based on document type
-        when (documentType.uppercase()) {
-            "PASSPORT" -> {
+        // Route to correct reader based on document type AND country code
+        // Spanish documents use PACE even if they are "Passport" type
+        val mrzParser = MRZParser()
+        val usesPACE = mrzParser.requiresPACE(mrzText, documentType)
+        
+        when {
+            usesPACE -> {
+                Log.d(TAG, "→ Document requires PACE authentication (ESP/German ID/French ID)")
+                readerPace = JmrtdPassportReaderPace()
+            }
+            documentType.uppercase() == "PASSPORT" -> {
                 Log.d(TAG, "→ Using TD3 PASSPORT reader (BAC authentication)")
                 readerTD3 = PassportReaderTD3()
             }
-            "ID", "ID_CARD" -> {
+            documentType.uppercase() in listOf("ID", "ID_CARD") -> {
                 Log.d(TAG, "→ Using TD1 ID CARD reader (PACE authentication)")
                 readerPace = JmrtdPassportReaderPace()
             }

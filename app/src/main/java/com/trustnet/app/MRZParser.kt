@@ -451,4 +451,82 @@ class MRZParser {
         
         return bacKey
     }
+    
+    /**
+     * Extract country code from MRZ
+     * 
+     * TD3 (Passport) Line 2: Positions 3-5 (1-indexed) = substring(2, 5) (0-indexed)
+     * TD1 (ID Card) Line 2: Positions 1-3 (1-indexed) = substring(0, 3) (0-indexed)
+     * 
+     * Examples:
+     * - ESP = Spain
+     * - PRT = Portugal
+     * - GRC = Greece
+     * - FRA = France
+     * - DEU = Germany
+     */
+    fun extractCountryCode(mrzText: String, documentType: String): String {
+        val lines = mrzText.trim().split("\n")
+            .map { it.trim().replace(" ", "") }
+            .filter { it.isNotEmpty() }
+        
+        return when {
+            documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
+                // TD3: Country code is in Line 2, positions 3-5 (1-indexed) = 2-5 (0-indexed)
+                if (lines.size >= 2 && lines[1].length >= 5) {
+                    val countryCode = lines[1].substring(2, 5)
+                    Log.d(TAG, "TD3 Country Code: $countryCode")
+                    countryCode
+                } else {
+                    Log.w(TAG, "Cannot extract country code from TD3")
+                    ""
+                }
+            }
+            documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
+                // TD1: Country code is in Line 2, positions 1-3 (1-indexed) = 0-3 (0-indexed)
+                if (lines.size >= 2 && lines[1].length >= 3) {
+                    val countryCode = lines[1].substring(0, 3)
+                    Log.d(TAG, "TD1 Country Code: $countryCode")
+                    countryCode
+                } else {
+                    Log.w(TAG, "Cannot extract country code from TD1")
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
+    
+    /**
+     * Determine if document requires PACE authentication
+     * 
+     * PACE is required for:
+     * - Spanish documents (ESP)
+     * - German eID (DEU with electronic ID chip)
+     * - French national ID
+     * - Other European ID cards
+     * 
+     * BAC is used for:
+     * - Standard TD3 passports (most countries)
+     * - Portuguese passports (PRT)
+     */
+    fun requiresPACE(mrzText: String, documentType: String): Boolean {
+        val countryCode = extractCountryCode(mrzText, documentType)
+        
+        // Spanish documents ALWAYS use PACE, never BAC
+        if (countryCode.equals("ESP", ignoreCase = true)) {
+            Log.d(TAG, "✓ Spanish document detected (ESP) - requires PACE")
+            return true
+        }
+        
+        // German ID cards use PACE
+        if (countryCode.equals("DEU", ignoreCase = true) && 
+            (documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true))) {
+            Log.d(TAG, "✓ German ID card detected (DEU) - requires PACE")
+            return true
+        }
+        
+        Log.d(TAG, "Standard document detected ($countryCode) - uses BAC")
+        return false
+    }
 }
