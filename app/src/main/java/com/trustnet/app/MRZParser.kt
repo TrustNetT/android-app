@@ -187,8 +187,8 @@ class MRZParser {
     
     /**
      * Extract document number from MRZ
-     * TD3 (Passport) Line 2: Positions 0-8
-     * TD1 (ID Card) Line 1: Positions 5-14
+     * TD3 (Passport) Line 2: ICAO 9303 Positions 0-8 (9 digits) = substring(0, 9)
+     * TD1 (ID Card) Line 1: ICAO 9303 Positions 5-13 (9 digits) = substring(5, 14)
      * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
     fun extractDocumentNumber(mrzText: String, documentType: String): String {
@@ -213,8 +213,8 @@ class MRZParser {
             }
             documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD1 format for document number")
-                if (lines.size >= 1 && lines[0].length >= 15) {
-                    lines[0].substring(5, 15).trim()
+                if (lines.size >= 1 && lines[0].length >= 14) {
+                    lines[0].substring(5, 14).trim()
                 } else {
                     Log.w(TAG, "TD1: Not enough data (have ${lines.size} lines, line[0] length=${if (lines.size >= 1) lines[0].length else 0})")
                     ""
@@ -231,8 +231,8 @@ class MRZParser {
     
     /**
      * Extract date of birth from MRZ
-     * TD3 (Passport) Line 2: Positions 21-26 (YYMMDD)
-     * TD1 (ID Card) Line 2: Positions 0-5 (YYMMDD)
+     * TD3 (Passport) Line 2: ICAO 9303 Positions 13-18 (YYMMDD) = substring(13, 19)
+     * TD1 (ID Card) Line 2: ICAO 9303 Positions 0-5 (YYMMDD) = substring(0, 6)
      * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
     fun extractDateOfBirth(mrzText: String, documentType: String): String {
@@ -248,10 +248,10 @@ class MRZParser {
         val result = when {
             documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD3 format for DOB")
-                if (lines.size >= 2 && lines[1].length >= 27) {
-                    lines[1].substring(21, 27)
+                if (lines.size >= 2 && lines[1].length >= 19) {
+                    lines[1].substring(13, 19)
                 } else {
-                    Log.w(TAG, "TD3: Not enough data")
+                    Log.w(TAG, "TD3: Not enough data (have ${lines.size} lines, line[1] length=${if (lines.size >= 2) lines[1].length else 0})")
                     ""
                 }
             }
@@ -275,8 +275,8 @@ class MRZParser {
     
     /**
      * Extract document expiry date from MRZ
-     * TD3 (Passport) Line 2: Positions 27-32 (YYMMDD) - 6 characters
-     * TD1 (ID Card) Line 3: Positions 0-5 (YYMMDD) - 6 characters
+     * TD3 (Passport) Line 2: ICAO 9303 Positions 20-25 (YYMMDD) = substring(20, 26)
+     * TD1 (ID Card) Line 2: ICAO 9303 Positions 10-15 (YYMMDD) = substring(10, 16)
      * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
     fun extractExpiryDate(mrzText: String, documentType: String): String {
@@ -292,19 +292,19 @@ class MRZParser {
         val result = when {
             documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD3 format for expiry")
-                if (lines.size >= 2 && lines[1].length >= 33) {
-                    lines[1].substring(27, 33)
+                if (lines.size >= 2 && lines[1].length >= 26) {
+                    lines[1].substring(20, 26)
                 } else {
-                    Log.w(TAG, "TD3: Not enough data")
+                    Log.w(TAG, "TD3: Not enough data (have ${lines.size} lines, line[1] length=${if (lines.size >= 2) lines[1].length else 0})")
                     ""
                 }
             }
             documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD1 format for expiry")
-                if (lines.size >= 3 && lines[2].length >= 6) {
-                    lines[2].substring(0, 6)
+                if (lines.size >= 2 && lines[1].length >= 16) {
+                    lines[1].substring(10, 16)
                 } else {
-                    Log.w(TAG, "TD1: Not enough data (have ${lines.size} lines, line[2] length=${if (lines.size >= 3) lines[2].length else 0})")
+                    Log.w(TAG, "TD1: Not enough data (have ${lines.size} lines, line[1] length=${if (lines.size >= 2) lines[1].length else 0})")
                     ""
                 }
             }
