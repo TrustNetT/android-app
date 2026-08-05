@@ -275,8 +275,8 @@ class MRZParser {
     
     /**
      * Extract document expiry date from MRZ
-     * TD3 (Passport) Line 2: Positions 27-32 (YYMMDD)
-     * TD1 (ID Card) Line 2: Positions 7-12 (YYMMDD)
+     * TD3 (Passport) Line 2: Positions 27-32 (YYMMDD) - 6 characters
+     * TD1 (ID Card) Line 3: Positions 0-5 (YYMMDD) - 6 characters
      * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
     fun extractExpiryDate(mrzText: String, documentType: String): String {
@@ -292,8 +292,8 @@ class MRZParser {
         val result = when {
             documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD3 format for expiry")
-                if (lines.size >= 2 && lines[1].length >= 32) {
-                    lines[1].substring(27, 32)
+                if (lines.size >= 2 && lines[1].length >= 33) {
+                    lines[1].substring(27, 33)
                 } else {
                     Log.w(TAG, "TD3: Not enough data")
                     ""
@@ -301,10 +301,10 @@ class MRZParser {
             }
             documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD1 format for expiry")
-                if (lines.size >= 2 && lines[1].length >= 13) {
-                    lines[1].substring(7, 13)
+                if (lines.size >= 3 && lines[2].length >= 6) {
+                    lines[2].substring(0, 6)
                 } else {
-                    Log.w(TAG, "TD1: Not enough data (have ${lines.size} lines, line[1] length=${if (lines.size >= 2) lines[1].length else 0})")
+                    Log.w(TAG, "TD1: Not enough data (have ${lines.size} lines, line[2] length=${if (lines.size >= 3) lines[2].length else 0})")
                     ""
                 }
             }
