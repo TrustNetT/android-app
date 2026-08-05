@@ -453,12 +453,16 @@ class MRZParser {
     }
     
     /**
-     * Extract country code from MRZ
+     * Extract country code (Nationality) from MRZ
      * 
-     * TD3 (Passport) Line 2: Positions 3-5 (1-indexed) = substring(2, 5) (0-indexed)
-     * TD1 (ID Card) Line 2: Positions 1-3 (1-indexed) = substring(0, 3) (0-indexed)
+     * TD3 (Passport):
+     * - Line 2, positions 10-12 (ICAO 9303 Nationality code): substring(10, 13)
+     * - Example: PAI9176868ESP... → substring(10,13) = "ESP"
      * 
-     * Examples:
+     * TD1 (ID Card):
+     * - Line 1, positions 3-5 (1-indexed) = substring(2, 5) (0-indexed)
+     * 
+     * Country codes:
      * - ESP = Spain
      * - PRT = Portugal
      * - GRC = Greece
@@ -472,24 +476,25 @@ class MRZParser {
         
         return when {
             documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
-                // TD3: Country code is in Line 2, positions 3-5 (1-indexed) = 2-5 (0-indexed)
-                if (lines.size >= 2 && lines[1].length >= 5) {
-                    val countryCode = lines[1].substring(2, 5)
-                    Log.d(TAG, "TD3 Country Code: $countryCode")
+                // TD3: Nationality code is in Line 2, positions 10-12 (0-indexed: substring 10-13)
+                // This is the ICAO 9303 standard field
+                if (lines.size >= 2 && lines[1].length >= 13) {
+                    val countryCode = lines[1].substring(10, 13)
+                    Log.d(TAG, "TD3 Country Code (Nationality): $countryCode (from Line 2: '${lines[1]}')")
                     countryCode
                 } else {
-                    Log.w(TAG, "Cannot extract country code from TD3")
+                    Log.w(TAG, "Cannot extract country code from TD3 (Line 2 too short: ${lines.size} lines, len=${if(lines.size >= 2) lines[1].length else 0})")
                     ""
                 }
             }
             documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
-                // TD1: Country code is in Line 2, positions 1-3 (1-indexed) = 0-3 (0-indexed)
-                if (lines.size >= 2 && lines[1].length >= 3) {
-                    val countryCode = lines[1].substring(0, 3)
-                    Log.d(TAG, "TD1 Country Code: $countryCode")
+                // TD1: Country code is in Line 1, positions 3-5 (1-indexed) = 2-5 (0-indexed)
+                if (lines.size >= 1 && lines[0].length >= 5) {
+                    val countryCode = lines[0].substring(2, 5)
+                    Log.d(TAG, "TD1 Country Code: $countryCode (from Line 1: '${lines[0]}')")
                     countryCode
                 } else {
-                    Log.w(TAG, "Cannot extract country code from TD1")
+                    Log.w(TAG, "Cannot extract country code from TD1 (Line 1 too short)")
                     ""
                 }
             }
