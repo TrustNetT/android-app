@@ -44,6 +44,7 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
     private var dateOfExpiry: String = ""
     private var bacKey: ByteArray = byteArrayOf()
     private var documentType: String = ""
+    private var mrzText: String = ""  // Complete MRZ text with all lines
     private var isProcessing = false
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,13 +58,25 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
         dateOfExpiry = intent.getStringExtra("DATE_OF_EXPIRY") ?: ""
         documentType = intent.getStringExtra("DOCUMENT_TYPE") ?: "ID"
         
+        // Get MRZ lines to construct complete BAC key with checksums
+        val mrzLine1 = intent.getStringExtra("MRZ_LINE_1") ?: ""
+        val mrzLine2 = intent.getStringExtra("MRZ_LINE_2") ?: ""
+        val mrzLine3 = intent.getStringExtra("MRZ_LINE_3") ?: ""
+        
+        // Reconstruct full MRZ text
+        mrzText = when {
+            mrzLine3.isNotEmpty() -> "$mrzLine1\n$mrzLine2\n$mrzLine3"  // TD1 format (3 lines)
+            else -> "$mrzLine1\n$mrzLine2"  // TD3 format (2 lines)
+        }
+        
         Log.d(TAG, "NFCProgressActivity initialized:")
         Log.d(TAG, "  Document Type: '$documentType'")
         Log.d(TAG, "  Document Number: '$documentNumber'")
         Log.d(TAG, "  Date of Birth (YYMMDD): '$dateOfBirth'")
         Log.d(TAG, "  Date of Expiry (YYMMDD): '$dateOfExpiry'")
+        Log.d(TAG, "  MRZ Text: '$mrzText'")
         
-        // Derive BAC key from MRZ components
+        // Derive BAC key from MRZ components with checksums
         deriveBACKey()
         
         // Initialize NFC and reader
@@ -109,26 +122,52 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
     }
     
     /**
-     * Derive BAC (Basic Access Control) key from MRZ components
-     * Uses BACKeyService to compute SHA-1 hash of Document Number + DOB + Expiry
+     * Derive BAC (Basic Access Control) key from MRZ components with control digits
+     * 
+     * ICAO 9303 Format (24 characters):
+     * DocumentNumber(9) + DocumentChecksum(1) + DOB(6) + DOBChecksum(1) + Expiry(6) + ExpiryChecksum(1)
+     * 
+     * Uses MRZParser to extract complete BAC key string with all checksums,
+     * then SHA-1 hashes to produce 20-byte encryption key.
      */
     private fun deriveBACKey() {
-        if (documentNumber.isEmpty() || dateOfBirth.isEmpty() || dateOfExpiry.isEmpty()) {
-            Log.w(TAG, "Cannot derive BAC key - missing components")
+        if (mrzText.isEmpty()) {
+            Log.w(TAG, "Cannot derive BAC key - MRZ text is empty")
+            return
+        }
+        
+        if (documentType.isEmpty()) {
+            Log.w(TAG, "Cannot derive BAC key - document type is unknown")
             return
         }
         
         try {
+            // Step 1: Use MRZParser to construct complete BAC key string with checksums
+            val mrzParser = MRZParser()
+            val bacKeyString = mrzParser.constructBACKeyString(mrzText, documentType)
+            
+            if (bacKeyString.isEmpty()) {
+                Log.e(TAG, "✗ Failed to construct BAC key string from MRZ")
+                return
+            }
+            
+            if (bacKeyString.length != 24) {
+                Log.w(TAG, "⚠ BAC key string has unexpected length: ${bacKeyString.length} (expected 24)")
+            }
+            
+            // Step 2: Derive BAC key from complete 24-character string with checksums
             val bacService = BACKeyService()
-            bacKey = bacService.deriveBACKey(documentNumber, dateOfBirth, dateOfExpiry)
+            bacKey = bacService.deriveBACKey(bacKeyString)
             
             if (bacService.isValidBACKey(bacKey)) {
-                Log.d(TAG, "✓ BAC key derived: ${bacKey.size} bytes")
+                Log.d(TAG, "✓ BAC key derived successfully: ${bacKey.size} bytes")
+                Log.d(TAG, "  BAC Key String: $bacKeyString (length: ${bacKeyString.length})")
+                Log.d(TAG, "  SHA-1 Hash: ${bacKey.joinToString("") { "%02x".format(it) }}")
             } else {
-                Log.e(TAG, "✗ Invalid BAC key")
+                Log.e(TAG, "✗ Invalid BAC key after derivation")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error deriving BAC key: ${e.message}")
+            Log.e(TAG, "Error deriving BAC key: ${e.message}", e)
         }
     }
     
@@ -195,21 +234,19 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
                     progressBar.visibility = View.VISIBLE
                 }
                 
-                Log.d(TAG, "Calling readPassportFromTag with BAC key (${bacKey.size} bytes)")
-                Log.d(TAG, "  Doc Number: '$documentNumber'")
-                Log.d(TAG, "  DOB: '$dateOfBirth'")
-                Log.d(TAG, "  Expiry: '$dateOfExpiry'")
+                Log.d(TAG, "Calling readPassportFromTag with complete MRZ text")
+                Log.d(TAG, "  MRZ Text: '$mrzText'")
                 Log.d(TAG, "  Document Type: '$documentType'")
                 
                 // Read passport data using appropriate authentication method
                 val passportData = when {
                     readerTD3 != null -> {
                         Log.d(TAG, "Reading via TD3 BAC reader...")
-                        readerTD3!!.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry)
+                        readerTD3!!.readPassportFromTag(tag, mrzText, documentType)
                     }
                     readerPace != null -> {
                         Log.d(TAG, "Reading via TD1 PACE reader...")
-                        readerPace!!.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry)
+                        readerPace!!.readPassportFromTag(tag, mrzText, documentType)
                     }
                     else -> PassportData(
                         success = false,

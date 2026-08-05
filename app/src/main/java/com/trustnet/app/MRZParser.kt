@@ -275,7 +275,7 @@ class MRZParser {
     
     /**
      * Extract document expiry date from MRZ
-     * TD3 (Passport) Line 2: ICAO 9303 Positions 20-25 (YYMMDD) = substring(20, 26)
+     * TD3 (Passport) Line 2: ICAO 9303 Positions 21-26 (YYMMDD) = substring(21, 27)
      * TD1 (ID Card) Line 2: ICAO 9303 Positions 10-15 (YYMMDD) = substring(10, 16)
      * NOTE: MRZ lines never contain spaces - remove all spaces first (OCR artifacts)
      */
@@ -287,13 +287,27 @@ class MRZParser {
         Log.d(TAG, "extractExpiryDate: type=$documentType, lines=${lines.size}")
         for (i in lines.indices) {
             Log.d(TAG, "  Line $i (no spaces): '${lines[i]}' (length: ${lines[i].length})")
+            // DEBUG: Show character-by-character breakdown
+            if (i == 1 && lines[i].length > 20) {
+                for (pos in 0 until minOf(44, lines[i].length)) {
+                    Log.d(TAG, "    Pos[$pos] = '${lines[i][pos]}'")
+                }
+            }
         }
         
         val result = when {
             documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD3 format for expiry")
-                if (lines.size >= 2 && lines[1].length >= 26) {
-                    lines[1].substring(20, 26)
+                if (lines.size >= 2 && lines[1].length >= 27) {
+                    val extracted = lines[1].substring(21, 27)
+                    Log.d(TAG, "TD3 Expiry extracted from (21,27): '$extracted'")
+                    // Also log what's around this position
+                    if (lines[1].length >= 33) {
+                        Log.d(TAG, "  (20,26)='${lines[1].substring(20, 26)}' (one pos earlier)")
+                        Log.d(TAG, "  (22,28)='${lines[1].substring(22, 28)}' (one pos later)")
+                        Log.d(TAG, "  (27,32)='${lines[1].substring(27, 32)}' (old broken pos)")
+                    }
+                    extracted
                 } else {
                     Log.w(TAG, "TD3: Not enough data (have ${lines.size} lines, line[1] length=${if (lines.size >= 2) lines[1].length else 0})")
                     ""
@@ -315,5 +329,126 @@ class MRZParser {
         }
         Log.d(TAG, "extractExpiryDate result: '$result'")
         return result
+    }
+    
+    /**
+     * Extract document number checksum from MRZ
+     * TD3 (Passport) Line 2: Position 10 (1-indexed) = substring(9, 10) (0-indexed)
+     * TD1 (ID Card) Line 1: Position 15 (1-indexed) = substring(14, 15) (0-indexed)
+     */
+    fun extractDocumentNumberChecksum(mrzText: String, documentType: String): String {
+        val lines = mrzText.trim().split("\n")
+            .map { it.trim().replace(" ", "") }
+            .filter { it.isNotEmpty() }
+        
+        return when {
+            documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 10) {
+                    lines[1].substring(9, 10)
+                } else {
+                    Log.w(TAG, "TD3: Cannot extract document checksum")
+                    ""
+                }
+            }
+            documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
+                if (lines.size >= 1 && lines[0].length >= 15) {
+                    lines[0].substring(14, 15)
+                } else {
+                    Log.w(TAG, "TD1: Cannot extract document checksum")
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
+    
+    /**
+     * Extract DOB checksum from MRZ
+     * TD3 (Passport) Line 2: Position 20 (1-indexed) = substring(19, 20) (0-indexed)
+     * TD1 (ID Card) Line 2: Position 7 (1-indexed) = substring(6, 7) (0-indexed)
+     */
+    fun extractDateOfBirthChecksum(mrzText: String, documentType: String): String {
+        val lines = mrzText.trim().split("\n")
+            .map { it.trim().replace(" ", "") }
+            .filter { it.isNotEmpty() }
+        
+        return when {
+            documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 20) {
+                    lines[1].substring(19, 20)
+                } else {
+                    Log.w(TAG, "TD3: Cannot extract DOB checksum")
+                    ""
+                }
+            }
+            documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 7) {
+                    lines[1].substring(6, 7)
+                } else {
+                    Log.w(TAG, "TD1: Cannot extract DOB checksum")
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
+    
+    /**
+     * Extract Expiry checksum from MRZ
+     * TD3 (Passport) Line 2: Position 28 (1-indexed) = substring(27, 28) (0-indexed)
+     * TD1 (ID Card) Line 2: Position 17 (1-indexed) = substring(16, 17) (0-indexed)
+     */
+    fun extractExpiryDateChecksum(mrzText: String, documentType: String): String {
+        val lines = mrzText.trim().split("\n")
+            .map { it.trim().replace(" ", "") }
+            .filter { it.isNotEmpty() }
+        
+        return when {
+            documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 28) {
+                    lines[1].substring(27, 28)
+                } else {
+                    Log.w(TAG, "TD3: Cannot extract expiry checksum")
+                    ""
+                }
+            }
+            documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 17) {
+                    lines[1].substring(16, 17)
+                } else {
+                    Log.w(TAG, "TD1: Cannot extract expiry checksum")
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
+    
+    /**
+     * Construct complete BAC key string with all checksums
+     * Format: DocumentNumber(9) + DocChecksum(1) + DOB(6) + DOBChecksum(1) + Expiry(6) + ExpiryChecksum(1)
+     * Total: 24 characters
+     */
+    fun constructBACKeyString(
+        mrzText: String,
+        documentType: String
+    ): String {
+        val docNum = extractDocumentNumber(mrzText, documentType)
+        val docChk = extractDocumentNumberChecksum(mrzText, documentType)
+        val dob = extractDateOfBirth(mrzText, documentType)
+        val dobChk = extractDateOfBirthChecksum(mrzText, documentType)
+        val exp = extractExpiryDate(mrzText, documentType)
+        val expChk = extractExpiryDateChecksum(mrzText, documentType)
+        
+        val bacKey = docNum + docChk + dob + dobChk + exp + expChk
+        Log.d(TAG, "BAC Key String: $bacKey (length: ${bacKey.length})")
+        Log.d(TAG, "  DocNum: $docNum")
+        Log.d(TAG, "  DocChk: $docChk")
+        Log.d(TAG, "  DOB: $dob")
+        Log.d(TAG, "  DOBChk: $dobChk")
+        Log.d(TAG, "  Expiry: $exp")
+        Log.d(TAG, "  ExpChk: $expChk")
+        
+        return bacKey
     }
 }

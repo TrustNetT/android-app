@@ -4,6 +4,7 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import com.trustnet.app.BACKeyService
+import com.trustnet.app.MRZParser
 import com.trustnet.nfc.pace.PaceAuthenticator
 import com.trustnet.nfc.pace.PaceApduBuilder
 import org.jmrtd.lds.icao.DG1File
@@ -44,21 +45,53 @@ class JmrtdPassportReaderPace {
 
     suspend fun readPassportFromTag(
         tag: Tag,
-        documentNumber: String,
-        dateOfBirth: String,
-        dateOfExpiry: String
+        mrzText: String,
+        documentType: String
     ): PassportData {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "readPassportFromTag starting with BAC components...")
+                Log.d(TAG, "readPassportFromTag starting with MRZ text...")
+                Log.d(TAG, "  MRZ Text: '$mrzText'")
+                Log.d(TAG, "  Document Type: '$documentType'")
+                
+                // Parse MRZ to extract components with checksums
+                val mrzParser = MRZParser()
+                val documentNumber = mrzParser.extractDocumentNumber(mrzText, documentType)
+                val dateOfBirth = mrzParser.extractDateOfBirth(mrzText, documentType)
+                val dateOfExpiry = mrzParser.extractExpiryDate(mrzText, documentType)
+                
+                Log.d(TAG, "Extracted from MRZ:")
                 Log.d(TAG, "  Document Number: '$documentNumber'")
                 Log.d(TAG, "  DOB (YYMMDD): '$dateOfBirth'")
                 Log.d(TAG, "  Expiry (YYMMDD): '$dateOfExpiry'")
                 
-                // Derive BAC key from MRZ components
+                // Construct complete 24-character BAC key string with all checksums
+                val bacKeyString = mrzParser.constructBACKeyString(mrzText, documentType)
+                if (bacKeyString.isEmpty()) {
+                    return@withContext PassportData(
+                        success = false,
+                        error = "Failed to construct BAC key string from MRZ"
+                    )
+                }
+                
+                if (bacKeyString.length != 24) {
+                    Log.w(TAG, "⚠ BAC key string has unexpected length: ${bacKeyString.length} (expected 24)")
+                }
+                
+                // Derive BAC key using complete 24-character string WITH checksums (ICAO 9303)
                 val bacService = BACKeyService()
-                val bacKey = bacService.deriveBACKey(documentNumber, dateOfBirth, dateOfExpiry)
-                Log.d(TAG, "✓ BAC key derived: ${bacKey.size} bytes")
+                val bacKey = bacService.deriveBACKey(bacKeyString)
+                
+                if (!bacService.isValidBACKey(bacKey)) {
+                    return@withContext PassportData(
+                        success = false,
+                        error = "Invalid BAC key derived from MRZ"
+                    )
+                }
+                
+                Log.d(TAG, "✓ BAC key derived successfully: ${bacKey.size} bytes")
+                Log.d(TAG, "  BAC Key String: $bacKeyString (length: ${bacKeyString.length})")
+                Log.d(TAG, "  SHA-1 Hash: ${bacKey.joinToString("") { "%02x".format(it) }}")
                 
                 val isoDep = IsoDep.get(tag) ?: return@withContext PassportData(
                     success = false,

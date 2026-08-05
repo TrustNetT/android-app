@@ -1,11 +1,11 @@
-#Wed Aug 05 15:16:48 BST 2026
-base.0=/home/jcgarcia/GitProjects/TrustNet/android-app/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
-base.1=/home/jcgarcia/GitProjects/TrustNet/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
-base.2=/home/jcgarcia/GitProjects/TrustNet/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/10/classes.dex
-base.3=/home/jcgarcia/GitProjects/TrustNet/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/13/classes.dex
-base.4=/home/jcgarcia/GitProjects/TrustNet/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/15/classes.dex
-base.5=/home/jcgarcia/GitProjects/TrustNet/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/4/classes.dex
-base.6=/home/jcgarcia/GitProjects/TrustNet/android-app/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
+#Wed Aug 05 16:09:02 BST 2026
+base.0=/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.1=/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.2=/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/10/classes.dex
+base.3=/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/13/classes.dex
+base.4=/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/15/classes.dex
+base.5=/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build/intermediates/dex/debug/mergeProjectDexDebug/4/classes.dex
+base.6=/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=10/classes.dex

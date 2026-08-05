@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.trustnet.app.BACImplementationTest" tests="5" skipped="1" failures="0" errors="0" timestamp="2026-08-05T15:09:04" hostname="Julitoslaptop" time="0.102">
+  <properties/>
+  <testcase name="testBACKeyDerivationFormula" classname="com.trustnet.app.BACImplementationTest" time="0.07"/>
+  <testcase name="testBACKeyIsDeterministic" classname="com.trustnet.app.BACImplementationTest" time="0.004"/>
+  <testcase name="testBACKeyDerivationWithSpanishDNI" classname="com.trustnet.app.BACImplementationTest" time="0.02"/>
+  <testcase name="testBACKeyUniquenessAcrossDocuments" classname="com.trustnet.app.BACImplementationTest" time="0.005"/>
+  <testcase name="testMRZExtractionPositions" classname="com.trustnet.app.BACImplementationTest" time="0.0">
+    <skipped/>
+  </testcase>
+  <system-out><![CDATA[✓ BAC Key Formula Test PASSED
+  Input: IDESPBK1697064290711810940
+  Expected: 4835B68CE7E620C173741560B8432C419F7647EA
+  Derived:  4835B68CE7E620C173741560B8432C419F7647EA
+✓ BAC Key Determinism Test PASSED
+  Key is consistent across multiple derivations
+✓ BAC Key Derivation Test PASSED
+  Document: IDESPBK1697064
+  DOB: 290711 (29/07/1929)
+  Expiry: 810940 (09/04/1981)
+  Derived Key: 4835B68CE7E620C173741560B8432C419F7647EA (20 bytes)
+✓ BAC Key Uniqueness Test PASSED
+  Key 1: 4835B68CE7E620C173741560B8432C419F7647EA
+  Key 2: 0D8B3550FC22BA09488BF7718785E8EEF0C9B654
+  Key 3: B115AC843173A862F82DEAE6E9AD0479B35602B3
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
