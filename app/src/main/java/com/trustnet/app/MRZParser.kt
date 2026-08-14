@@ -292,8 +292,8 @@ class MRZParser {
         val result = when {
             documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
                 Log.d(TAG, "Using TD3 format for expiry")
-                if (lines.size >= 2 && lines[1].length >= 26) {
-                    lines[1].substring(20, 26)
+                if (lines.size >= 2 && lines[1].length >= 27) {
+                    lines[1].substring(21, 27)  // ICAO 9303 Positions 21-26 (skip position 20 check digit)
                 } else {
                     Log.w(TAG, "TD3: Not enough data (have ${lines.size} lines, line[1] length=${if (lines.size >= 2) lines[1].length else 0})")
                     ""
