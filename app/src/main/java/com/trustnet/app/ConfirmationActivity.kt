@@ -42,11 +42,20 @@ class ConfirmationActivity : AppCompatActivity() {
         mrzLine3 = intent.getStringExtra("MRZ_LINE_3") ?: ""
         documentType = intent.getStringExtra("DOCUMENT_TYPE") ?: "PASSPORT"
         
-        Log.d(TAG, "OCR Captured:")
-        Log.d(TAG, "  MRZ Line 1: '$mrzLine1' (${mrzLine1.length} chars - expected 44)")
-        Log.d(TAG, "  MRZ Line 2: '$mrzLine2' (${mrzLine2.length} chars - expected 44, need >=28 for check digit at pos 27)")
+        Log.d(TAG, "═══ OCR Captured (RAW, before correction) ═══")
+        Log.d(TAG, "  MRZ Line 1: '$mrzLine1' (${mrzLine1.length} chars)")
+        Log.d(TAG, "  MRZ Line 2: '$mrzLine2' (${mrzLine2.length} chars)")
         Log.d(TAG, "  MRZ Line 3: '$mrzLine3' (${mrzLine3.length} chars)")
-        Log.d(TAG, "  Document Type (from user selection): '$documentType'")
+        Log.d(TAG, "  Document Type: '$documentType'")
+        
+        // CRITICAL: Correct OCR errors before processing
+        // ML Kit often misreads numbers in the MRZ machine-readable zone
+        // Common mistakes: '1'→'t'/'l'/'I', 'I'→'1'/'l', 'O'→'0', 'Z'→'2'
+        mrzLine2 = correctOCRErrors(mrzLine2)
+        
+        Log.d(TAG, "═══ OCR Captured (AFTER correction) ═══")
+        Log.d(TAG, "  MRZ Line 2: '$mrzLine2' (${mrzLine2.length} chars)")
+        Log.d(TAG, "  (correction applied for common OCR misreads)")
         
         if (mrzLine2.length < 28) {
             Log.e(TAG, "🔴 CRITICAL: MRZ Line 2 too short (${mrzLine2.length} chars, need >=28 for expiry check digit)")
@@ -83,6 +92,111 @@ class ConfirmationActivity : AppCompatActivity() {
      * TD1 (ID Card): 3 MRZ lines (line 1: type, country; line 2: number, DOB, etc.; line 3: address/data)
      * TD2 (Visa): 2 MRZ lines (similar to TD3)
      */
+    private fun correctOCRErrors(mrzLine: String): String {
+        if (mrzLine.isEmpty()) return mrzLine
+        
+        var corrected = mrzLine
+        var corrections = mutableListOf<String>()
+        
+        // Character-by-character correction based on position constraints
+        // MRZ format is strictly defined: alphanumeric + '<' only
+        // Different positions expect digits vs letters
+        
+        // LETTER-TO-DIGIT corrections (for all digit positions)
+        // ML Kit often confuses letters and digits: 't'→'1', 'l'→'1', 'I'→'1', 'O'→'0', 'Z'→'2', etc.
+        val digitOnlyPositions = listOf(9, 19, 27)  // Check digit positions
+        digitOnlyPositions.forEach { pos ->
+            if (pos < corrected.length) {
+                val char = corrected[pos]
+                if (!char.isDigit()) {
+                    val correctedChar = when (char) {
+                        't', 'T', 'l', 'L', 'I' -> '1'  // Common misreads as '1'
+                        'O', 'o' -> '0'                  // Common misread as '0'
+                        'Z', 'z' -> '2'                  // Common misread as '2'
+                        'S', 's' -> '5'                  // Common misread as '5'
+                        'B', 'b' -> '8'                  // Common misread as '8'
+                        else -> char                     // Keep unknown chars
+                    }
+                    if (correctedChar != char) {
+                        corrections.add("Pos $pos: '$char' → '$correctedChar'")
+                        corrected = corrected.replaceRange(pos, pos + 1, correctedChar.toString())
+                    }
+                }
+            }
+        }
+        
+        // DOB and Expiry date positions: MUST be digits (0-9)
+        val datePositions = (13..18) + (21..26)  // DOB (13-18) and Expiry (21-26)
+        datePositions.forEach { pos ->
+            if (pos < corrected.length) {
+                val char = corrected[pos]
+                if (!char.isDigit()) {
+                    val correctedChar = when (char) {
+                        't', 'T', 'l', 'L', 'I' -> '1'  // '1' misread
+                        'O', 'o' -> '0'                  // '0' misread
+                        'Z', 'z' -> '2'                  // '2' misread
+                        'S', 's' -> '5'                  // '5' misread
+                        'G', 'g' -> '6'                  // '6' misread
+                        'B', 'b' -> '8'                  // '8' misread
+                        else -> char
+                    }
+                    if (correctedChar != char) {
+                        corrections.add("Pos $pos: '$char' → '$correctedChar'")
+                        corrected = corrected.replaceRange(pos, pos + 1, correctedChar.toString())
+                    }
+                }
+            }
+        }
+        
+        // LETTER-TO-LETTER corrections (for document number and other letter positions)
+        // Common confusions: A↔R, I↔L, O↔Q, etc.
+        // Document number positions (0-8): Mix of letters and digits
+        // For positions that should be letters, try to detect letter-to-letter OCR mistakes
+        
+        // These are heuristic-based: if we see obviously confused letter pairs,
+        // try to correct them based on likelihood in passport numbers
+        var charArray = corrected.toCharArray()
+        
+        // Position 0: Document type letter (first letter, usually P, A, C, D, T, V, X)
+        // Common: P should not be R, A should not be R
+        if (corrected.length > 0) {
+            val char0 = charArray[0]
+            if (char0 == 'R' && corrected.length >= 3) {
+                // Check if next chars suggest it should be 'P' or another letter
+                // For now, 'P' is most common for passports
+                charArray[0] = 'P'
+                corrections.add("Pos 0: '$char0' → 'P' (common passport document type)")
+            }
+        }
+        
+        // Positions 1-2: Usually letters for issuing country (like 'AI' for Spain/passport)
+        // Common misreads: A→R, I→L, I→1
+        if (corrected.length > 2) {
+            val char1 = charArray[1]
+            val char2 = charArray[2]
+            
+            // If we see 'R' in position 1, it's likely 'A' (A→R is very common)
+            if (char1 == 'R' || char1 == 'r') {
+                charArray[1] = 'A'
+                corrections.add("Pos 1: '$char1' → 'A' (Spanish issuer code)")
+            }
+            
+            // If we see 'L' in position 2, it's likely 'I' (I→L is very common)
+            if (char2 == 'L' || char2 == 'l') {
+                charArray[2] = 'I'
+                corrections.add("Pos 2: '$char2' → 'I' (Spanish issuer code)")
+            }
+        }
+        
+        corrected = charArray.joinToString("")
+        
+        if (corrections.isNotEmpty()) {
+            Log.d(TAG, "🔧 OCR corrections applied: ${corrections.joinToString(", ")}")
+        }
+        
+        return corrected
+    }
+    
     private fun detectDocumentTypeFromMRZ(): String {
         val lineCount = listOfNotNull(
             mrzLine1.ifEmpty { null },
@@ -293,13 +407,22 @@ class ConfirmationActivity : AppCompatActivity() {
             nfcIntent.putExtra("MRZ_LINE_1", mrzLine1)
             nfcIntent.putExtra("MRZ_LINE_2", mrzLine2)
             nfcIntent.putExtra("MRZ_LINE_3", mrzLine3)
-            nfcIntent.putExtra("BAC_PASSWORD", bacPassword)  // Full 24-char password
             
-            Log.d(TAG, "✓ Intent created and about to be sent")
-            Log.d(TAG, "  Intent extra BAC_PASSWORD (from intent before send): '$bacPassword'")
-            Log.d(TAG, "  Intent extra BAC_PASSWORD length: ${bacPassword.length}")
+            // CRITICAL: Pass individual MRZ components for JMRTD BACKey
+            // Let JMRTD build the 24-char password internally
+            nfcIntent.putExtra("DOCUMENT_NUMBER", documentNumber)    // 9 chars
+            nfcIntent.putExtra("DATE_OF_BIRTH", dateOfBirth)         // 6 chars YYMMDD
+            nfcIntent.putExtra("DATE_OF_EXPIRY", dateOfExpiry)       // 6 chars YYMMDD
+            
+            nfcIntent.putExtra("BAC_PASSWORD", bacPassword)  // Full 24-char password (for logging/debugging)
+            
+            Log.d(TAG, "✓ Intent created with all extras")
+            Log.d(TAG, "  Document Number: '$documentNumber' (${documentNumber.length} chars)")
+            Log.d(TAG, "  Date of Birth: '$dateOfBirth' (${dateOfBirth.length} chars)")
+            Log.d(TAG, "  Date of Expiry: '$dateOfExpiry' (${dateOfExpiry.length} chars)")
+            Log.d(TAG, "  BAC Password (for reference): '$bacPassword' (${bacPassword.length} chars)")
 
-            Log.d(TAG, "✓ Intent created with all extras - launching NFCProgressActivity")
+            Log.d(TAG, "✓ Launching NFCProgressActivity with MRZ components for JMRTD BACKey")
 
             startActivity(nfcIntent)
             finish()

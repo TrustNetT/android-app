@@ -43,7 +43,6 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
     private var dateOfBirth: String = ""
     private var dateOfExpiry: String = ""
     private var bacPassword: String = ""  // Full 24-char BAC password with check digits
-    private var bacKey: ByteArray = byteArrayOf()
     private var documentType: String = ""
     private var isProcessing = false
     
@@ -56,36 +55,48 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nfc_progress)
         
-        // Get BAC password (24-char with check digits) from ConfirmationActivity
-        bacPassword = intent.getStringExtra("BAC_PASSWORD") ?: ""
+        // Get MRZ components from ConfirmationActivity (not the 24-char password)
+        // This way we let JMRTD build the password internally
+        documentNumber = intent.getStringExtra("DOCUMENT_NUMBER") ?: ""
+        dateOfBirth = intent.getStringExtra("DATE_OF_BIRTH") ?: ""
+        dateOfExpiry = intent.getStringExtra("DATE_OF_EXPIRY") ?: ""
+        bacPassword = intent.getStringExtra("BAC_PASSWORD") ?: ""  // For logging/debugging
         documentType = intent.getStringExtra("DOCUMENT_TYPE") ?: "ID"
         
         Log.d(TAG, "═══ NFCProgressActivity initialized ═══")
         Log.d(TAG, "Document Type: '$documentType'")
-        Log.d(TAG, "BAC Password RECEIVED: '$bacPassword'")
-        Log.d(TAG, "BAC Password Length: ${bacPassword.length} (expected: 24)")
-        Log.d(TAG, "BAC Password Hex Dump: ${bacPassword.toByteArray().joinToString("") { String.format("%02x", it) }}")
-        Log.d(TAG, "BAC Password Char Array: [${bacPassword.mapIndexed { i, c -> "$i:$c" }.joinToString(", ")}]")
+        Log.d(TAG, "MRZ Components (extracted from OCR):")
+        Log.d(TAG, "  Document Number: '$documentNumber' (expected 9 chars)")
+        Log.d(TAG, "  Date of Birth:   '$dateOfBirth' (expected 6 chars YYMMDD)")
+        Log.d(TAG, "  Date of Expiry:  '$dateOfExpiry' (expected 6 chars YYMMDD)")
+        Log.d(TAG, "  Full BAC Password (for reference): '$bacPassword' (${bacPassword.length} chars)")
         
         // DEBUG MODE: Override with hardcoded MRZ if flag is set
         if (DEBUG_USE_HARDCODED_MRZ) {
-            Log.w(TAG, "🔴 DEBUG MODE ENABLED: Using hardcoded BAC password instead of OCR")
+            Log.w(TAG, "🔴 DEBUG MODE ENABLED: Using hardcoded MRZ components instead of OCR")
             Log.w(TAG, "   Hardcoded BAC: '$DEBUG_HARDCODED_BAC_PASSWORD'")
+            // For hardcoded test, extract components from the hardcoded password
+            // Standard format: [DocNumber 9] + [Check 1] + [DOB 6] + [Check 1] + [Expiry 6] + [Check 1]
+            documentNumber = DEBUG_HARDCODED_BAC_PASSWORD.substring(0, 9)      // Positions 0-8
+            dateOfBirth = DEBUG_HARDCODED_BAC_PASSWORD.substring(10, 16)       // Positions 10-15  
+            dateOfExpiry = DEBUG_HARDCODED_BAC_PASSWORD.substring(18, 24)      // Positions 18-23
             bacPassword = DEBUG_HARDCODED_BAC_PASSWORD
         }
         
-        // CRITICAL: Check if BAC password is valid
-        if (bacPassword.isEmpty()) {
-            Log.e(TAG, "🔴 CRITICAL ERROR: BAC Password is EMPTY!")
-            Log.e(TAG, "   App was launched without going through OCR/ConfirmationActivity")
-            Log.e(TAG, "   Cannot proceed with NFC authentication")
-        } else if (bacPassword.length != 24) {
-            Log.w(TAG, "⚠️ WARNING: BAC Password length is ${bacPassword.length}, expected 24")
+        // CRITICAL: Validate MRZ components
+        if (documentNumber.isEmpty() || dateOfBirth.isEmpty() || dateOfExpiry.isEmpty()) {
+            Log.e(TAG, "🔴 CRITICAL ERROR: MRZ components are missing!")
+            Log.e(TAG, "   Document Number: '${documentNumber}' (got ${documentNumber.length}, expected 9)")
+            Log.e(TAG, "   Date of Birth: '${dateOfBirth}' (got ${dateOfBirth.length}, expected 6)")
+            Log.e(TAG, "   Date of Expiry: '${dateOfExpiry}' (got ${dateOfExpiry.length}, expected 6)")
+        } else if (documentNumber.length != 9 || dateOfBirth.length != 6 || dateOfExpiry.length != 6) {
+            Log.w(TAG, "⚠️ WARNING: MRZ components have unexpected lengths")
+            Log.w(TAG, "   Document Number: ${documentNumber.length} (expected 9)")
+            Log.w(TAG, "   Date of Birth: ${dateOfBirth.length} (expected 6)")
+            Log.w(TAG, "   Date of Expiry: ${dateOfExpiry.length} (expected 6)")
             Log.w(TAG, "   NFC authentication may fail")
         } else {
-            Log.d(TAG, "✓ BAC Password is valid (24 chars)")
-            // CRITICAL: Derive BAC key from password IMMEDIATELY
-            deriveBACKey()
+            Log.d(TAG, "✓ MRZ components are valid and ready for JMRTD BAC")
         }
         
         // Initialize NFC and reader
@@ -162,33 +173,7 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
         Log.d(TAG, "NFCProgressActivity ready - waiting for button tap")
     }
     
-    /**
-     * Derive BAC (Basic Access Control) key from 24-character MRZ password
-     * The password includes all check digits per ICAO 9303
-     */
-    private fun deriveBACKey() {
-        if (bacPassword.isEmpty()) {
-            Log.w(TAG, "Cannot derive BAC key - BAC password is empty")
-            return
-        }
-        
-        if (bacPassword.length != 24) {
-            Log.w(TAG, "⚠ BAC password is ${bacPassword.length} chars, expected 24. May fail NFC authentication.")
-        }
-        
-        try {
-            val bacService = BACKeyService()
-            bacKey = bacService.deriveBACKey(bacPassword)
-            
-            if (bacService.isValidBACKey(bacKey)) {
-                Log.d(TAG, "✓ BAC key derived from 24-char password: ${bacKey.size} bytes")
-            } else {
-                Log.e(TAG, "✗ Invalid BAC key derived")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error deriving BAC key: ${e.message}")
-        }
-    }
+
     
     /**
      * Show dialog to manually edit BAC password
@@ -218,7 +203,6 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
                 }
                 
                 bacPassword = newPassword
-                deriveBACKey()
                 statusTextView.text = "✓ BAC Updated\n\nTap 'START NFC SCAN' to try again"
                 dialog.dismiss()
                 
@@ -293,10 +277,14 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
             return
         }
         
-        if (bacKey.isEmpty()) {
-            Log.e(TAG, "BAC key not available - cannot authenticate")
+        // Validate MRZ components before attempting BAC (JMRTD will build the 24-char password internally)
+        if (documentNumber.isEmpty() || dateOfBirth.isEmpty() || dateOfExpiry.isEmpty()) {
+            Log.e(TAG, "MRZ components not available - cannot authenticate")
+            Log.e(TAG, "  Document Number: '${documentNumber}' (length: ${documentNumber.length})")
+            Log.e(TAG, "  Date of Birth: '${dateOfBirth}' (length: ${dateOfBirth.length})")
+            Log.e(TAG, "  Date of Expiry: '${dateOfExpiry}' (length: ${dateOfExpiry.length})")
             runOnUiThread {
-                Toast.makeText(this, "BAC key not available", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "MRZ components missing", Toast.LENGTH_SHORT).show()
             }
             return
         }
@@ -311,17 +299,18 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
                     progressBar.visibility = View.VISIBLE
                 }
                 
-                Log.d(TAG, "Calling readPassportFromTag with BAC password")
-                Log.d(TAG, "  BAC Password (24 chars): '$bacPassword' (length: ${bacPassword.length})")
-                Log.d(TAG, "  Document Type: '$documentType'")
+                Log.d(TAG, "Calling readPassportFromTag with MRZ components")
+                Log.d(TAG, "  Document Number: '$documentNumber'")
+                Log.d(TAG, "  Date of Birth: '$dateOfBirth'")
+                Log.d(TAG, "  Date of Expiry: '$dateOfExpiry'")
                 
                 // Read passport data using appropriate authentication method
-                // JMRTD handles all key derivation internally - just pass the full BAC password
+                // Pass individual MRZ components - let JMRTD build the 24-char password internally
                 val passportData = when {
                     readerTD3 != null -> {
-                        Log.d(TAG, "Reading via TD3 BAC reader with full 24-char BAC password...")
-                        Log.d(TAG, "JMRTD will internally derive key and perform authentication")
-                        readerTD3!!.readPassportFromTag(tag, bacPassword)
+                        Log.d(TAG, "Reading via TD3 BAC reader using BACKey...")
+                        Log.d(TAG, "JMRTD will internally derive keys per ICAO 9303")
+                        readerTD3!!.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry, bacPassword)
                     }
                     readerPace != null -> {
                         Log.d(TAG, "Reading via TD1 PACE reader...")

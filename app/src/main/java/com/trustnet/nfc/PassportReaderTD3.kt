@@ -4,11 +4,9 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import org.jmrtd.PassportService
+import org.jmrtd.BACKey
 import net.sf.scuba.smartcards.CommandAPDU
 import net.sf.scuba.smartcards.ResponseAPDU
-import java.security.MessageDigest
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.DESedeKeySpec
 
 
 class PassportReaderTD3 {
@@ -18,34 +16,55 @@ class PassportReaderTD3 {
     }
 
     /**
-     * Expand 16-byte key to 24-byte 3DES key (standard: append first 8 bytes)
-     */
-    private fun expandTo24Bytes(key16: ByteArray): ByteArray {
-        if (key16.size != 16) {
-            throw IllegalArgumentException("Key must be 16 bytes, got ${key16.size}")
-        }
-        // Standard 3DES expansion: 16 bytes + first 8 bytes = 24 bytes
-        val key24 = ByteArray(24)
-        System.arraycopy(key16, 0, key24, 0, 16)      // Copy first 16 bytes
-        System.arraycopy(key16, 0, key24, 16, 8)      // Copy first 8 bytes at end
-        return key24
-    }
-
-    /**
-     * Read a TD3 passport using BAC.
+     * Read a TD3 passport using BAC (Basic Access Control).
+     * 
+     * Uses JMRTD's built-in BACKey class for proper key derivation per ICAO 9303.
+     * DO NOT pass the 24-char password string - that's error-prone.
+     * Instead, pass the individual MRZ components and let JMRTD build the password internally.
      *
      * @param tag NFC Tag (IsoDep)
-     * @param bacPassword 24-char MRZ password
+     * @param documentNumber 9-character document number from MRZ line 2, positions 0-8
+     * @param dateOfBirth 6-character DOB (YYMMDD) from MRZ line 2, positions 13-18
+     * @param dateOfExpiry 6-character expiry (YYMMDD) from MRZ line 2, positions 21-26
+     * @param bacPassword 24-char password (for logging/debugging only)
      */
-    suspend fun readPassportFromTag(tag: Tag, bacPassword: String): PassportData {
+    suspend fun readPassportFromTag(
+        tag: Tag,
+        documentNumber: String,
+        dateOfBirth: String,
+        dateOfExpiry: String,
+        bacPassword: String  // For logging/debugging only
+    ): PassportData {
         try {
+            Log.e(TAG, "█████████████████████████████████████████████████████")
+            Log.e(TAG, "█ NFC_TEST_MARKER_START: TD3 PASSPORT BAC TEST BEGIN")
+            Log.e(TAG, "█████████████████████████████████████████████████████")
             Log.d(TAG, "═══ TD3 PASSPORT BAC AUTHENTICATION ═══")
-            Log.d(TAG, "BAC password: '$bacPassword' (length=${bacPassword.length})")
-
-            if (bacPassword.length != 24) {
+            
+            // Log extracted MRZ fields for verification
+            Log.d(TAG, "MRZ Components (extracted from OCR):")
+            Log.d(TAG, "  Document Number: '$documentNumber' (expected 9 chars, got ${documentNumber.length})")
+            Log.d(TAG, "  Date of Birth:   '$dateOfBirth' (expected 6 chars YYMMDD, got ${dateOfBirth.length})")
+            Log.d(TAG, "  Date of Expiry:  '$dateOfExpiry' (expected 6 chars YYMMDD, got ${dateOfExpiry.length})")
+            Log.d(TAG, "  Full BAC Password (for reference): '$bacPassword' (${bacPassword.length} chars)")
+            
+            // Validate MRZ components
+            if (documentNumber.length != 9) {
                 return PassportData(
                     success = false,
-                    error = "BAC password must be 24 characters, got ${bacPassword.length}"
+                    error = "Document number must be 9 characters, got ${documentNumber.length}"
+                )
+            }
+            if (dateOfBirth.length != 6) {
+                return PassportData(
+                    success = false,
+                    error = "Date of birth must be 6 characters (YYMMDD), got ${dateOfBirth.length}"
+                )
+            }
+            if (dateOfExpiry.length != 6) {
+                return PassportData(
+                    success = false,
+                    error = "Date of expiry must be 6 characters (YYMMDD), got ${dateOfExpiry.length}"
                 )
             }
 
@@ -69,41 +88,21 @@ class PassportReaderTD3 {
             passportService.open()
             Log.d(TAG, "✓ PassportService opened")
             
-            // 4. Derive BAC keys from 24-char password
-            val kseed = MessageDigest.getInstance("SHA-1")
-                .digest(bacPassword.toByteArray(Charsets.US_ASCII))
-
-            if (kseed.size != 20) {
-                return PassportData(
-                    success = false,
-                    error = "Kseed must be 20 bytes, got ${kseed.size}"
-                )
-            }
-
-            val kenc = kseed.copyOfRange(0, 16)   // 0..15
-            val kmac = kseed.copyOfRange(4, 20)   // 4..19
-
-            Log.d(TAG, "✓ Kseed: ${kseed.joinToString("") { "%02x".format(it) }}")
-            Log.d(TAG, "✓ Kenc:  ${kenc.joinToString("") { "%02x".format(it) }}")
-            Log.d(TAG, "✓ Kmac:  ${kmac.joinToString("") { "%02x".format(it) }}")
-
-            // 5. Build 3DES SecretKey objects from 16-byte keys
-            // JMRTD 0.7.33 requires SecretKey, not raw byte arrays
-            // Expand to 24-byte 3DES keys (standard: 16 bytes + first 8 bytes)
+            // 4. Create BACKey using JMRTD's built-in class
+            // This lets JMRTD handle all key derivation internally, ensuring correctness
+            Log.d(TAG, "→ Creating BACKey using JMRTD's built-in class...")
             try {
-                Log.d(TAG, "→ Building 3DES SecretKey objects for BAC...")
-                
-                val kenc24 = expandTo24Bytes(kenc)
-                val kmac24 = expandTo24Bytes(kmac)
-                Log.d(TAG, "  Kenc expanded to 24 bytes")
-                Log.d(TAG, "  Kmac expanded to 24 bytes")
-                
-                val keyFactory = SecretKeyFactory.getInstance("DESede")
-                val kencKey = keyFactory.generateSecret(DESedeKeySpec(kenc24, 0))
-                val kmacKey = keyFactory.generateSecret(DESedeKeySpec(kmac24, 0))
-                Log.d(TAG, "  ✓ 3DES SecretKey objects created")
+                val bacKey = BACKey(documentNumber, dateOfBirth, dateOfExpiry)
+                Log.d(TAG, "  ✓ BACKey created successfully")
+                Log.d(TAG, "  JMRTD will internally:")
+                Log.d(TAG, "  JMRTD will internally:")
+                Log.d(TAG, "    1. Build 24-char BAC password")
+                Log.d(TAG, "    2. Apply SHA-1 derivation")
+                Log.d(TAG, "    3. Split Kseed correctly (Kenc[0:16], Kmac[4:20])")
+                Log.d(TAG, "    4. Expand to 24-byte 3DES keys")
+                Log.d(TAG, "    5. Build mutual auth APDU with proper encryption/MAC")
 
-                // 6. SELECT ePassport AID to activate applet (FIX for 0x6D00 error)
+                // 5. SELECT ePassport AID to activate applet (FIX for 0x6D00 error)
                 Log.d(TAG, "→ Selecting ePassport AID before BAC...")
                 val selectAidData = byteArrayOf(
                     0xA0.toByte(), 0x00, 0x00, 0x02, 0x47, 0x10, 0x01
@@ -120,9 +119,26 @@ class PassportReaderTD3 {
                     Log.w(TAG, "  ⚠️  SELECT AID response was null, continuing anyway...")
                 }
                 
-                // 7. Perform BAC with JMRTD 0.7.33 API
-                Log.d(TAG, "→ Performing BAC via PassportService.doBAC(kencKey, kmacKey)")
-                passportService.doBAC(kencKey, kmacKey)
+                // 6. TEST: Manual GET CHALLENGE to verify chip is responsive
+                // This bypasses JMRTD entirely to test if issue is chip vs JMRTD wiring
+                Log.d(TAG, "")
+                Log.d(TAG, "→ [DEBUG] Testing manual GET CHALLENGE before JMRTD...")
+                val manualTestResponse = cardService.testManualGetChallenge()
+                if (manualTestResponse != null && manualTestResponse.size >= 10) {
+                    Log.d(TAG, "  ✓ Manual test succeeded - chip is responsive")
+                    Log.d(TAG, "  ⚠️  If JMRTD still fails below, problem is JMRTD/CardService wiring")
+                } else if (manualTestResponse != null && manualTestResponse.size >= 2) {
+                    val sw = ((manualTestResponse[manualTestResponse.size - 2].toInt() and 0xFF) shl 8) or
+                             (manualTestResponse[manualTestResponse.size - 1].toInt() and 0xFF)
+                    if (sw == 0x6D00) {
+                        Log.e(TAG, "  ✗ Manual test also got 0x6D00 - chip state issue")
+                    }
+                }
+                Log.d(TAG, "")
+                
+                // 7. Perform BAC with JMRTD using BACKey
+                Log.d(TAG, "→ Performing BAC via PassportService.doBAC(bacKey)")
+                passportService.doBAC(bacKey)
                 Log.d(TAG, "✓✓✓ BAC mutual authentication SUCCESS")
                 
                 return PassportData(
