@@ -30,6 +30,7 @@ class ConfirmationActivity : AppCompatActivity() {
     private var documentNumber: String = ""
     private var dateOfBirth: String = ""
     private var dateOfExpiry: String = ""
+    private var bacPassword: String = ""  // Full 24-char BAC password with check digits
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +43,27 @@ class ConfirmationActivity : AppCompatActivity() {
         documentType = intent.getStringExtra("DOCUMENT_TYPE") ?: "PASSPORT"
         
         Log.d(TAG, "OCR Captured:")
-        Log.d(TAG, "  MRZ Line 1: '$mrzLine1'")
-        Log.d(TAG, "  MRZ Line 2: '$mrzLine2'")
-        Log.d(TAG, "  MRZ Line 3: '$mrzLine3'")
-        Log.d(TAG, "  Document Type: '$documentType'")
+        Log.d(TAG, "  MRZ Line 1: '$mrzLine1' (${mrzLine1.length} chars - expected 44)")
+        Log.d(TAG, "  MRZ Line 2: '$mrzLine2' (${mrzLine2.length} chars - expected 44, need >=28 for check digit at pos 27)")
+        Log.d(TAG, "  MRZ Line 3: '$mrzLine3' (${mrzLine3.length} chars)")
+        Log.d(TAG, "  Document Type (from user selection): '$documentType'")
+        
+        if (mrzLine2.length < 28) {
+            Log.e(TAG, "🔴 CRITICAL: MRZ Line 2 too short (${mrzLine2.length} chars, need >=28 for expiry check digit)")
+        }
+        
+        // AUTO-DETECT document type based on MRZ line count
+        // This is the AUTHORITATIVE determination of document type
+        val actualDocType = detectDocumentTypeFromMRZ()
+        Log.d(TAG, "  🔍 AUTO-DETECTED document type: '$actualDocType' (2 lines=TD3/Passport, 3 lines=TD1/ID_CARD)")
+        
+        if (actualDocType != documentType) {
+            Log.w(TAG, "  ⚠ Document type mismatch! User selected: '$documentType', but MRZ indicates: '$actualDocType'")
+            Log.w(TAG, "  → Using auto-detected type: '$actualDocType' (MRZ is more reliable than user selection)")
+            documentType = actualDocType  // Override user selection with MRZ detection
+        }
+        
+        Log.d(TAG, "  ✓ Final document type: '$documentType'")
         
         // Extract BAC components from MRZ for chip authentication
         extractBACComponents()
@@ -59,8 +77,40 @@ class ConfirmationActivity : AppCompatActivity() {
     }
     
     /**
+     * AUTO-DETECT document type based on MRZ line count
+     * This overrides user selection because MRZ format is standardized by ICAO 9303
+     * TD3 (Passport): 2 MRZ lines (line 1: type, country, name; line 2: number, DOB, expiry, etc.)
+     * TD1 (ID Card): 3 MRZ lines (line 1: type, country; line 2: number, DOB, etc.; line 3: address/data)
+     * TD2 (Visa): 2 MRZ lines (similar to TD3)
+     */
+    private fun detectDocumentTypeFromMRZ(): String {
+        val lineCount = listOfNotNull(
+            mrzLine1.ifEmpty { null },
+            mrzLine2.ifEmpty { null },
+            mrzLine3.ifEmpty { null }
+        ).size
+        
+        Log.d(TAG, "  Detecting document type from MRZ line count: $lineCount lines")
+        
+        return when (lineCount) {
+            2 -> {
+                Log.d(TAG, "    → 2 lines = TD3 Format (Passport)")
+                "Passport"
+            }
+            3 -> {
+                Log.d(TAG, "    → 3 lines = TD1 Format (ID Card)")
+                "ID"
+            }
+            else -> {
+                Log.w(TAG, "    → Unexpected line count ($lineCount), defaulting to Passport")
+                "Passport"
+            }
+        }
+    }
+    
+    /**
      * Extract BAC (Basic Access Control) components from MRZ
-     * BAC requires: Document Number + Date of Birth + Date of Expiry
+     * BAC requires: Document Number + DOB + Expiry + their check digits (24 chars total)
      * These are used to derive encryption keys for chip authentication
      */
     private fun extractBACComponents() {
@@ -76,10 +126,25 @@ class ConfirmationActivity : AppCompatActivity() {
             dateOfBirth = mrzParser.extractDateOfBirth(fullMRZ, documentType)
             dateOfExpiry = mrzParser.extractExpiryDate(fullMRZ, documentType)
             
-            Log.d(TAG, "✓ Extracted BAC components:")
-            Log.d(TAG, "  Document Number: '$documentNumber'")
-            Log.d(TAG, "  Date of Birth (YYMMDD): '$dateOfBirth'")
-            Log.d(TAG, "  Date of Expiry (YYMMDD): '$dateOfExpiry'")
+            // Extract check digits from ICAO 9303 fixed positions in MRZ line (not calculated)
+            val docNumCheckDigit = mrzParser.extractDocumentNumberCheckDigit(fullMRZ, documentType)
+            val dobCheckDigit = mrzParser.extractDateOfBirthCheckDigit(fullMRZ, documentType)
+            val expiryCheckDigit = mrzParser.extractExpiryDateCheckDigit(fullMRZ, documentType)
+            
+            // Build full 24-character BAC password per ICAO 9303
+            // Format: [DocNumber 9] + [Check 1] + [DOB 6] + [Check 1] + [Expiry 6] + [Check 1]
+            bacPassword = documentNumber + docNumCheckDigit + dateOfBirth + dobCheckDigit + dateOfExpiry + expiryCheckDigit
+            
+            Log.d(TAG, "Extracted BAC components:")
+            Log.d(TAG, "  Document Number: '$documentNumber' + Check Digit (from MRZ pos 9): '$docNumCheckDigit'")
+            Log.d(TAG, "  Date of Birth (YYMMDD): '$dateOfBirth' + Check Digit (from MRZ pos 19): '$dobCheckDigit'")
+            Log.d(TAG, "  Date of Expiry (YYMMDD): '$dateOfExpiry' + Check Digit (from MRZ pos 27): '$expiryCheckDigit'")
+            Log.d(TAG, "  Full BAC Password (24 chars): '$bacPassword' (length: ${bacPassword.length})")
+            Log.d(TAG, "FINAL BAC PASSWORD: $bacPassword")
+            
+            if (bacPassword.length != 24) {
+                Log.w(TAG, "⚠ BAC password is ${bacPassword.length} chars, should be 24!")
+            }
             
             if (documentNumber.isEmpty() || dateOfBirth.isEmpty() || dateOfExpiry.isEmpty()) {
                 Log.w(TAG, "⚠ One or more BAC components missing!")
@@ -143,6 +208,59 @@ class ConfirmationActivity : AppCompatActivity() {
                 Log.w(TAG, "Expiry display: not detected")
             }
         }
+        
+        // Display BAC components (fields + check digits) for user verification
+        displayBACPasswordBreakdown()
+    }
+    
+    /**
+     * Display the full BAC password components on screen for verification
+     * Shows each component with its extracted check digit
+     */
+    private fun displayBACPasswordBreakdown() {
+        val mrzParser = MRZParser()
+        val fullMRZ = listOfNotNull(
+            mrzLine1.ifEmpty { null },
+            mrzLine2.ifEmpty { null },
+            mrzLine3.ifEmpty { null }
+        ).joinToString("\n")
+        
+        if (fullMRZ.isEmpty()) {
+            return
+        }
+        
+        // Extract check digits for display
+        val docNumCheckDigit = mrzParser.extractDocumentNumberCheckDigit(fullMRZ, documentType)
+        val dobCheckDigit = mrzParser.extractDateOfBirthCheckDigit(fullMRZ, documentType)
+        val expiryCheckDigit = mrzParser.extractExpiryDateCheckDigit(fullMRZ, documentType)
+        
+        // Build components display text
+        val componentsText = """
+            Document Number: $documentNumber ✓
+            Check Digit (pos 9): $docNumCheckDigit
+            
+            Date of Birth: $dateOfBirth ✓
+            Check Digit (pos 19): $dobCheckDigit
+            
+            Expiry Date: $dateOfExpiry ✓
+            Check Digit (pos 27): $expiryCheckDigit
+        """.trimIndent()
+        
+        // Update UI
+        val componentsView: TextView? = findViewById(R.id.bacComponentsTextView)
+        if (componentsView != null) {
+            componentsView.text = componentsText
+        }
+        
+        // Update final BAC password display
+        val passwordView: TextView? = findViewById(R.id.bacPasswordTextView)
+        if (passwordView != null) {
+            passwordView.text = bacPassword
+        }
+        
+        Log.d(TAG, "BAC breakdown displayed:")
+        Log.d(TAG, componentsText)
+        Log.d(TAG, "Final BAC Password: $bacPassword")
     }
 
     /**
@@ -164,18 +282,24 @@ class ConfirmationActivity : AppCompatActivity() {
             Log.d(TAG, "  MRZ Line 1: '$mrzLine1'")
             Log.d(TAG, "  MRZ Line 2: '$mrzLine2'")
             Log.d(TAG, "  MRZ Line 3: '$mrzLine3'")
-            Log.d(TAG, "  Document Number: '$documentNumber'")
-            Log.d(TAG, "  Date of Birth: '$dateOfBirth'")
-            Log.d(TAG, "  Date of Expiry: '$dateOfExpiry'")
+            Log.d(TAG, "  BAC Password (24 chars): '$bacPassword' (length: ${bacPassword.length})")
+            Log.d(TAG, "  BAC Password Hex Dump: ${bacPassword.toByteArray().joinToString("") { String.format("%02x", it) }}")
+            Log.d(TAG, "  BAC Password Char Array: [${bacPassword.mapIndexed { i, c -> "$i:$c" }.joinToString(", ")}]")
+            Log.d(TAG, "  🔍 DOCUMENT_TYPE being passed: '$documentType' (${documentType.length} chars)")
+            Log.d(TAG, "     Bytes: ${documentType.map { it.code }.toList()}")
 
             val nfcIntent = Intent(this, NFCProgressActivity::class.java)
             nfcIntent.putExtra("DOCUMENT_TYPE", documentType)
             nfcIntent.putExtra("MRZ_LINE_1", mrzLine1)
             nfcIntent.putExtra("MRZ_LINE_2", mrzLine2)
             nfcIntent.putExtra("MRZ_LINE_3", mrzLine3)
-            nfcIntent.putExtra("DOCUMENT_NUMBER", documentNumber)
-            nfcIntent.putExtra("DATE_OF_BIRTH", dateOfBirth)
-            nfcIntent.putExtra("DATE_OF_EXPIRY", dateOfExpiry)
+            nfcIntent.putExtra("BAC_PASSWORD", bacPassword)  // Full 24-char password
+            
+            Log.d(TAG, "✓ Intent created and about to be sent")
+            Log.d(TAG, "  Intent extra BAC_PASSWORD (from intent before send): '$bacPassword'")
+            Log.d(TAG, "  Intent extra BAC_PASSWORD length: ${bacPassword.length}")
+
+            Log.d(TAG, "✓ Intent created with all extras - launching NFCProgressActivity")
 
             startActivity(nfcIntent)
             finish()

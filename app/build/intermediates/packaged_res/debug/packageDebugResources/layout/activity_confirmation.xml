@@ -118,6 +118,57 @@
                 android:background="@drawable/edit_text_border"
                 android:layout_marginBottom="16dp" />
 
+            <!-- BAC Password Components (for verification) -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NFC Authentication (BAC Password Components)"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/bacComponentsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="[Check digits will be shown here]"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:background="@color/light_gray"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="monospace" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Final BAC Password (24 chars)"
+                android:textStyle="bold"
+                android:textColor="@color/purple_700"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/bacPasswordTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="[Password will be shown here]"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple_700"
+                android:background="@color/light_purple"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:fontFamily="monospace" />
+
         </LinearLayout>
     </ScrollView>
 

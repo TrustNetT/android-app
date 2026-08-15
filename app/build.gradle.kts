@@ -45,9 +45,11 @@ dependencies {
     // ML Kit Text Recognition
     implementation("com.google.mlkit:text-recognition:16.0.0")
     
-    // JMRTD (passport/ID reading with PACE support)
-    implementation("org.jmrtd:jmrtd:0.7.27")
-    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+    // JMRTD (passport/ID reading with full eMRTD stack)
+    implementation("org.jmrtd:jmrtd:0.7.33") {
+        exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
+    }
+    implementation("org.bouncycastle:bcprov-jdk18on:1.71")
     
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

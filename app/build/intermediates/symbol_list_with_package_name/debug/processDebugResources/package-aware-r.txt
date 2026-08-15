@@ -1353,6 +1353,7 @@ color green
 color highlighted_text_material_dark
 color highlighted_text_material_light
 color light_gray
+color light_purple
 color m3_appbar_overlay_color
 color m3_assist_chip_icon_tint_color
 color m3_assist_chip_stroke_color
@@ -1979,6 +1980,7 @@ color mtrl_textinput_focused_box_stroke_color
 color mtrl_textinput_hovered_box_stroke_color
 color notification_action_color_filter
 color notification_icon_bg_color
+color orange
 color primary
 color primary_blue
 color primary_dark_material_dark
@@ -3115,6 +3117,8 @@ id auto
 id autoComplete
 id autoCompleteToEnd
 id autoCompleteToStart
+id bacComponentsTextView
+id bacPasswordTextView
 id barrier
 id baseline
 id beginOnFirstDraw

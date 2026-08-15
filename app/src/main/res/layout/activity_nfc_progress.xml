@@ -46,6 +46,17 @@
         android:visibility="gone"
         android:layout_marginBottom="32dp" />
 
+    <!-- Edit MRZ Button (for OCR correction) -->
+    <Button
+        android:id="@+id/editButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Edit BAC Password (if OCR wrong)"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:background="@color/orange"
+        android:layout_marginBottom="16dp" />
+
     <!-- Scan Button -->
     <Button
         android:id="@+id/scanButton"

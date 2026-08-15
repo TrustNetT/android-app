@@ -6,6 +6,8 @@ color card_border
 color gray
 color green
 color light_gray
+color light_purple
+color orange
 color primary
 color primary_blue
 color purple
@@ -33,6 +35,8 @@ drawable ic_launcher_foreground
 drawable text_view_background
 drawable trustnet_logo
 id alignmentOverlay
+id bacComponentsTextView
+id bacPasswordTextView
 id birthDateValue
 id canEditText
 id confirmButton

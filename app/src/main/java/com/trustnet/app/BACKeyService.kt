@@ -15,33 +15,50 @@ class BACKeyService {
     }
     
     /**
-     * Derive BAC key from MRZ data
+     * Derive BAC key from complete 24-character MRZ password
      * 
-     * Formula:
-     * 1. Concatenate: documentNumber + dateOfBirth (YYMMDD) + dateOfExpiry (YYMMDD)
-     * 2. SHA-1 hash the concatenated string
-     * 3. Result is Kseed (20 bytes)
-     * 4. Derive Kenc and Kmac from Kseed (implementation specific)
+     * The password is formed per ICAO 9303 as:
+     * [DocNumber 9] + [DocNum Check 1] + [DOB 6 YYMMDD] + [DOB Check 1] + [Expiry 6 YYMMDD] + [Expiry Check 1]
+     * = 24 characters total
      * 
-     * @param documentNumber Document number from MRZ (e.g., "IDESPBK1169706")
-     * @param dateOfBirth Date of birth in YYMMDD format (e.g., "290711")
-     * @param dateOfExpiry Expiry date in YYMMDD format (e.g., "810940")
-     * @return Derived BAC key (20 bytes for SHA-1)
+     * Process:
+     * 1. Accept pre-formed 24-char password
+     * 2. SHA-1 hash it
+     * 3. Result is Kseed (20 bytes) for JMRTD BAC authentication
+     * 
+     * @param bacPassword 24-character BAC password from MRZ (must be exactly 24 chars)
+     * @return Derived BAC key (20 bytes for SHA-1) to pass to JMRTD PassportService.doBAC()
      */
-    fun deriveBACKey(
+    fun deriveBACKey(bacPassword: String): ByteArray {
+        // Validate input
+        if (bacPassword.length != 24) {
+            throw IllegalArgumentException(
+                "BAC password must be exactly 24 characters, got ${bacPassword.length}: '$bacPassword'"
+            )
+        }
+        
+        // Hash the 24-char password with SHA-1 per ICAO 9303
+        val messageDigest = MessageDigest.getInstance("SHA-1")
+        val bacKey = messageDigest.digest(bacPassword.toByteArray(Charsets.US_ASCII))
+        
+        // Result: 20-byte key (Kseed) for BAC authentication
+        return bacKey
+    }
+    
+    /**
+     * Legacy method for backward compatibility - accepts individual components
+     * DEPRECATED: Use deriveBACKey(bacPassword: String) instead
+     */
+    @Deprecated("Use deriveBACKey(bacPassword: String) with full 24-char password")
+    fun deriveBACKeyLegacy(
         documentNumber: String,
         dateOfBirth: String,
         dateOfExpiry: String
     ): ByteArray {
-        // Concatenate MRZ components exactly as per ICAO 9303
+        // This was the old incomplete implementation - kept for reference
         val mrzData = documentNumber + dateOfBirth + dateOfExpiry
-        
-        // Hash with SHA-1
         val messageDigest = MessageDigest.getInstance("SHA-1")
-        val bacKey = messageDigest.digest(mrzData.toByteArray(Charsets.US_ASCII))
-        
-        // Result: 20-byte key for BAC authentication
-        return bacKey
+        return messageDigest.digest(mrzData.toByteArray(Charsets.US_ASCII))
     }
     
     /**

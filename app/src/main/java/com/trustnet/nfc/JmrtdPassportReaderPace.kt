@@ -14,19 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 
-data class PassportData(
-    val firstName: String = "",
-    val lastName: String = "",
-    val documentNumber: String = "",
-    val dateOfBirth: String = "",
-    val dateOfExpiry: String = "",
-    val gender: String = "",
-    val nationality: String = "",
-    val faceImageBytes: ByteArray? = null,
-    val success: Boolean = false,
-    val error: String = ""
-)
-
 /**
  * Passport reader using BAC (Basic Access Control) authentication
  * Works with any ICAO 9303 compliant document:
@@ -44,20 +31,16 @@ class JmrtdPassportReaderPace {
 
     suspend fun readPassportFromTag(
         tag: Tag,
-        documentNumber: String,
-        dateOfBirth: String,
-        dateOfExpiry: String
+        bacPassword: String
     ): PassportData {
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(TAG, "readPassportFromTag starting with BAC components...")
-                Log.d(TAG, "  Document Number: '$documentNumber'")
-                Log.d(TAG, "  DOB (YYMMDD): '$dateOfBirth'")
-                Log.d(TAG, "  Expiry (YYMMDD): '$dateOfExpiry'")
+                Log.d(TAG, "readPassportFromTag starting with BAC password...")
+                Log.d(TAG, "  BAC Password (24 chars): '$bacPassword' (length: ${bacPassword.length})")
                 
-                // Derive BAC key from MRZ components
+                // Derive BAC key from 24-char password
                 val bacService = BACKeyService()
-                val bacKey = bacService.deriveBACKey(documentNumber, dateOfBirth, dateOfExpiry)
+                val bacKey = bacService.deriveBACKey(bacPassword)
                 Log.d(TAG, "✓ BAC key derived: ${bacKey.size} bytes")
                 
                 val isoDep = IsoDep.get(tag) ?: return@withContext PassportData(
@@ -191,7 +174,7 @@ class JmrtdPassportReaderPace {
                 
                 isoDep.close()
                 
-                if (documentNumber.isEmpty()) {
+                if (docNum.isEmpty()) {
                     return@withContext PassportData(
                         success = false,
                         error = "No document data extracted from DG1"

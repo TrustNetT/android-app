@@ -42,29 +42,51 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
     private var documentNumber: String = ""
     private var dateOfBirth: String = ""
     private var dateOfExpiry: String = ""
+    private var bacPassword: String = ""  // Full 24-char BAC password with check digits
     private var bacKey: ByteArray = byteArrayOf()
     private var documentType: String = ""
     private var isProcessing = false
+    
+    // DEBUG MODE: Set this to true to use hardcoded MRZ instead of OCR
+    // This test isolates whether the failure is OCR or the authentication logic
+    private val DEBUG_USE_HARDCODED_MRZ = false
+    private val DEBUG_HARDCODED_BAC_PASSWORD = "PAI917686865103182904102"  // Edit this to test different MRZ values
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nfc_progress)
         
-        // Get BAC components from ConfirmationActivity
-        // These are used to derive encryption keys for NFC chip authentication
-        documentNumber = intent.getStringExtra("DOCUMENT_NUMBER") ?: ""
-        dateOfBirth = intent.getStringExtra("DATE_OF_BIRTH") ?: ""
-        dateOfExpiry = intent.getStringExtra("DATE_OF_EXPIRY") ?: ""
+        // Get BAC password (24-char with check digits) from ConfirmationActivity
+        bacPassword = intent.getStringExtra("BAC_PASSWORD") ?: ""
         documentType = intent.getStringExtra("DOCUMENT_TYPE") ?: "ID"
         
-        Log.d(TAG, "NFCProgressActivity initialized:")
-        Log.d(TAG, "  Document Type: '$documentType'")
-        Log.d(TAG, "  Document Number: '$documentNumber'")
-        Log.d(TAG, "  Date of Birth (YYMMDD): '$dateOfBirth'")
-        Log.d(TAG, "  Date of Expiry (YYMMDD): '$dateOfExpiry'")
+        Log.d(TAG, "═══ NFCProgressActivity initialized ═══")
+        Log.d(TAG, "Document Type: '$documentType'")
+        Log.d(TAG, "BAC Password RECEIVED: '$bacPassword'")
+        Log.d(TAG, "BAC Password Length: ${bacPassword.length} (expected: 24)")
+        Log.d(TAG, "BAC Password Hex Dump: ${bacPassword.toByteArray().joinToString("") { String.format("%02x", it) }}")
+        Log.d(TAG, "BAC Password Char Array: [${bacPassword.mapIndexed { i, c -> "$i:$c" }.joinToString(", ")}]")
         
-        // Derive BAC key from MRZ components
-        deriveBACKey()
+        // DEBUG MODE: Override with hardcoded MRZ if flag is set
+        if (DEBUG_USE_HARDCODED_MRZ) {
+            Log.w(TAG, "🔴 DEBUG MODE ENABLED: Using hardcoded BAC password instead of OCR")
+            Log.w(TAG, "   Hardcoded BAC: '$DEBUG_HARDCODED_BAC_PASSWORD'")
+            bacPassword = DEBUG_HARDCODED_BAC_PASSWORD
+        }
+        
+        // CRITICAL: Check if BAC password is valid
+        if (bacPassword.isEmpty()) {
+            Log.e(TAG, "🔴 CRITICAL ERROR: BAC Password is EMPTY!")
+            Log.e(TAG, "   App was launched without going through OCR/ConfirmationActivity")
+            Log.e(TAG, "   Cannot proceed with NFC authentication")
+        } else if (bacPassword.length != 24) {
+            Log.w(TAG, "⚠️ WARNING: BAC Password length is ${bacPassword.length}, expected 24")
+            Log.w(TAG, "   NFC authentication may fail")
+        } else {
+            Log.d(TAG, "✓ BAC Password is valid (24 chars)")
+            // CRITICAL: Derive BAC key from password IMMEDIATELY
+            deriveBACKey()
+        }
         
         // Initialize NFC and reader
         nfcAdapter = NfcAdapter.getDefaultAdapter(this) ?: run {
@@ -74,18 +96,33 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
         }
         
         // Route to correct reader based on document type
+        Log.d(TAG, "📊 READER SELECTION DEBUG:")
+        Log.d(TAG, "   documentType raw value: '$documentType'")
+        Log.d(TAG, "   documentType.uppercase(): '${documentType.uppercase()}'")
+        Log.d(TAG, "   Checking conditions:")
+        Log.d(TAG, "     contains('Passport', ignoreCase=true): ${documentType.contains("Passport", ignoreCase = true)}")
+        Log.d(TAG, "     contains('TD3', ignoreCase=true): ${documentType.contains("TD3", ignoreCase = true)}")
+        Log.d(TAG, "     .uppercase() == 'PASSPORT': ${documentType.uppercase() == "PASSPORT"}")
+        Log.d(TAG, "     contains('ID', ignoreCase=true): ${documentType.contains("ID", ignoreCase = true)}")
+        Log.d(TAG, "     contains('ID_CARD', ignoreCase=true): ${documentType.contains("ID_CARD", ignoreCase = true)}")
+        
         when (documentType.uppercase()) {
             "PASSPORT" -> {
-                Log.d(TAG, "→ Using TD3 PASSPORT reader (BAC authentication)")
+                Log.d(TAG, "PASSPORT (TD3) → Using BAC protocol (ICAO 9303)")
                 readerTD3 = PassportReaderTD3()
             }
             "ID", "ID_CARD" -> {
-                Log.d(TAG, "→ Using TD1 ID CARD reader (PACE authentication)")
+                Log.d(TAG, "✓✓✓ MATCHED 'ID' or 'ID_CARD' → USING TD1 PACE READER ✓✓✓")
+                Log.d(TAG, "READER SELECTED: JmrtdPassportReaderPace (PACE authentication for ID cards)")
                 readerPace = JmrtdPassportReaderPace()
             }
             else -> {
-                Log.w(TAG, "Unknown document type: $documentType - defaulting to ID CARD (PACE)")
-                readerPace = JmrtdPassportReaderPace()
+                Log.e(TAG, "🔴 CRITICAL: Unknown document type: '$documentType' (${documentType.length} chars)")
+                Log.e(TAG, "    Bytes: ${documentType.map { it.code }.toList()}")
+                Log.e(TAG, "    Cannot proceed with NFC authentication - document type mismatch")
+                Toast.makeText(this, "Unknown document type: $documentType", Toast.LENGTH_LONG).show()
+                finish()
+                return
             }
         }
         
@@ -96,59 +133,138 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
         val titleTextView: TextView = findViewById(R.id.titleTextView)
         titleTextView.text = "Scan NFC Chip"
         
-        // Display BAC status
-        if (bacKey.isNotEmpty()) {
-            Log.d(TAG, "✓ BAC key derived successfully (${bacKey.size} bytes)")
-            statusTextView.text = "✓ BAC authenticated\nReady to scan NFC\n\nHold phone over NFC chip..."
+        // Display NFC ready status
+        // (JMRTD will handle key derivation internally)
+        if (bacPassword.isNotEmpty() && bacPassword.length == 24) {
+            Log.d(TAG, "✓ BAC password validated (24 chars)")
+            statusTextView.text = "✓ Ready for NFC\n\nTap 'START NFC SCAN' button to begin"
         } else {
-            Log.w(TAG, "⚠ BAC key derivation failed - NFC read may fail")
-            statusTextView.text = "Ready to scan NFC\n\nHold phone over NFC to read chip..."
+            Log.w(TAG, "⚠ BAC password invalid - NFC read may fail")
+            statusTextView.text = "Ready to scan NFC\n\nTap 'START NFC SCAN' button to begin"
         }
         
-        Log.d(TAG, "NFCProgressActivity ready for NFC scanning")
+        // Wire up START NFC SCAN button
+        val scanButton: android.widget.Button = findViewById(R.id.scanButton)
+        scanButton.setOnClickListener { 
+            Log.d(TAG, "🔵 START NFC SCAN button clicked")
+            startNFCReader()
+        }
+        
+        // Add EDIT MRZ button for OCR correction
+        val editButton: android.widget.Button? = findViewById(R.id.editButton)
+        if (editButton != null) {
+            editButton.setOnClickListener {
+                Log.d(TAG, "🔵 EDIT MRZ button clicked")
+                showMRZEditDialog()
+            }
+        }
+        
+        Log.d(TAG, "NFCProgressActivity ready - waiting for button tap")
     }
     
     /**
-     * Derive BAC (Basic Access Control) key from MRZ components
-     * Uses BACKeyService to compute SHA-1 hash of Document Number + DOB + Expiry
+     * Derive BAC (Basic Access Control) key from 24-character MRZ password
+     * The password includes all check digits per ICAO 9303
      */
     private fun deriveBACKey() {
-        if (documentNumber.isEmpty() || dateOfBirth.isEmpty() || dateOfExpiry.isEmpty()) {
-            Log.w(TAG, "Cannot derive BAC key - missing components")
+        if (bacPassword.isEmpty()) {
+            Log.w(TAG, "Cannot derive BAC key - BAC password is empty")
             return
+        }
+        
+        if (bacPassword.length != 24) {
+            Log.w(TAG, "⚠ BAC password is ${bacPassword.length} chars, expected 24. May fail NFC authentication.")
         }
         
         try {
             val bacService = BACKeyService()
-            bacKey = bacService.deriveBACKey(documentNumber, dateOfBirth, dateOfExpiry)
+            bacKey = bacService.deriveBACKey(bacPassword)
             
             if (bacService.isValidBACKey(bacKey)) {
-                Log.d(TAG, "✓ BAC key derived: ${bacKey.size} bytes")
+                Log.d(TAG, "✓ BAC key derived from 24-char password: ${bacKey.size} bytes")
             } else {
-                Log.e(TAG, "✗ Invalid BAC key")
+                Log.e(TAG, "✗ Invalid BAC key derived")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error deriving BAC key: ${e.message}")
         }
     }
     
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume: Enabling NFC reader mode")
+    /**
+     * Show dialog to manually edit BAC password
+     * This allows users to correct OCR errors before NFC authentication
+     */
+    private fun showMRZEditDialog() {
+        val builder = android.app.AlertDialog.Builder(this)
+        builder.setTitle("Edit BAC Password")
+        builder.setMessage("Enter the 24-character BAC password from your passport MRZ:\n\n[Doc# 9 chars] + [Doc Check 1] + [DOB 6 chars] + [DOB Check 1] + [Expiry 6 chars] + [Expiry Check 1]")
+        
+        val input = android.widget.EditText(this)
+        input.setText(bacPassword)
+        input.setSelection(bacPassword.length)
+        input.hint = "e.g., PAI917686865103182904102"
+        input.textSize = 14f
+        
+        builder.setView(input)
+        builder.setPositiveButton("OK") { dialog, _ ->
+            val newPassword = input.text.toString().trim().uppercase()
+            if (newPassword.length == 24) {
+                Log.d(TAG, "User entered BAC password: '$newPassword'")
+                
+                // Validate that all characters are valid MRZ (A-Z, 0-9, <)
+                if (!newPassword.all { it.isLetterOrDigit() || it == '<' }) {
+                    Toast.makeText(this@NFCProgressActivity, "BAC password can only contain letters, digits, and '<' characters", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                
+                bacPassword = newPassword
+                deriveBACKey()
+                statusTextView.text = "✓ BAC Updated\n\nTap 'START NFC SCAN' to try again"
+                dialog.dismiss()
+                
+                Toast.makeText(this@NFCProgressActivity, "MRZ updated. Ready to scan NFC chip.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@NFCProgressActivity, "BAC password must be exactly 24 characters (got ${newPassword.length})", Toast.LENGTH_SHORT).show()
+            }
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+    
+    /**
+     * Start NFC reader mode when user taps the button
+     * This prevents automatic NFC detection and gives user control
+     */
+    private fun startNFCReader() {
+        Log.d(TAG, "startNFCReader: Enabling NFC reader mode on button tap")
         
         try {
-            // Enable direct NFC callbacks (replaces intent filters)
-            if (nfcAdapter.isEnabled) {
-                nfcAdapter.enableReaderMode(this, this, READER_MODE_FLAGS, null)
-                statusTextView.text = "✓ NFC Ready\n\nHold phone over NFC chip..."
-            } else {
+            if (!nfcAdapter.isEnabled) {
                 Toast.makeText(this, "NFC is disabled. Please enable NFC in settings.", Toast.LENGTH_SHORT).show()
                 statusTextView.text = "NFC is disabled"
+                return
             }
+            
+            // Enable direct NFC callbacks (replaces intent filters)
+            nfcAdapter.enableReaderMode(this, this, READER_MODE_FLAGS, null)
+            statusTextView.text = "✓ NFC Enabled\n\nHold phone over NFC chip..."
+            
+            // Disable button to prevent multiple taps
+            findViewById<android.widget.Button>(R.id.scanButton).isEnabled = false
+            
+            Log.d(TAG, "✓ NFC reader mode enabled, waiting for tag...")
         } catch (e: Exception) {
             Log.e(TAG, "Error enabling reader mode: ${e.message}")
             statusTextView.text = "Error: ${e.message}"
         }
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume: Activity resumed (NFC not auto-enabled, waiting for button tap)")
+        // NFC reader mode is NOT enabled here - user must tap the button
     }
     
     override fun onPause() {
@@ -195,21 +311,21 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
                     progressBar.visibility = View.VISIBLE
                 }
                 
-                Log.d(TAG, "Calling readPassportFromTag with BAC key (${bacKey.size} bytes)")
-                Log.d(TAG, "  Doc Number: '$documentNumber'")
-                Log.d(TAG, "  DOB: '$dateOfBirth'")
-                Log.d(TAG, "  Expiry: '$dateOfExpiry'")
+                Log.d(TAG, "Calling readPassportFromTag with BAC password")
+                Log.d(TAG, "  BAC Password (24 chars): '$bacPassword' (length: ${bacPassword.length})")
                 Log.d(TAG, "  Document Type: '$documentType'")
                 
                 // Read passport data using appropriate authentication method
+                // JMRTD handles all key derivation internally - just pass the full BAC password
                 val passportData = when {
                     readerTD3 != null -> {
-                        Log.d(TAG, "Reading via TD3 BAC reader...")
-                        readerTD3!!.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry)
+                        Log.d(TAG, "Reading via TD3 BAC reader with full 24-char BAC password...")
+                        Log.d(TAG, "JMRTD will internally derive key and perform authentication")
+                        readerTD3!!.readPassportFromTag(tag, bacPassword)
                     }
                     readerPace != null -> {
                         Log.d(TAG, "Reading via TD1 PACE reader...")
-                        readerPace!!.readPassportFromTag(tag, documentNumber, dateOfBirth, dateOfExpiry)
+                        readerPace!!.readPassportFromTag(tag, bacPassword)
                     }
                     else -> PassportData(
                         success = false,

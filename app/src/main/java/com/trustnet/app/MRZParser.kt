@@ -316,4 +316,109 @@ class MRZParser {
         Log.d(TAG, "extractExpiryDate result: '$result'")
         return result
     }
+    
+    /**
+     * Extract document number check digit from MRZ
+     * TD3 (Passport) Line 2: ICAO 9303 Position 9
+     * TD1 (ID Card) Line 1: Position 15
+     */
+    fun extractDocumentNumberCheckDigit(mrzText: String, documentType: String): String {
+        val lines = mrzText.trim().split("\n")
+            .map { it.trim().replace(" ", "") }
+            .filter { it.isNotEmpty() }
+        
+        return when {
+            documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 10) {
+                    val digit = lines[1].substring(9, 10)
+                    Log.d(TAG, "TD3 Document Number Check Digit: '$digit'")
+                    digit
+                } else {
+                    Log.w(TAG, "Cannot extract TD3 doc number check digit")
+                    ""
+                }
+            }
+            documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
+                if (lines.size >= 1 && lines[0].length >= 16) {
+                    val digit = lines[0].substring(15, 16)
+                    Log.d(TAG, "TD1 Document Number Check Digit: '$digit'")
+                    digit
+                } else {
+                    Log.w(TAG, "Cannot extract TD1 doc number check digit")
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
+    
+    /**
+     * Extract date of birth check digit from MRZ
+     * TD3 (Passport) Line 2: ICAO 9303 Position 19
+     * TD1 (ID Card) Line 2: Position 6
+     */
+    fun extractDateOfBirthCheckDigit(mrzText: String, documentType: String): String {
+        val lines = mrzText.trim().split("\n")
+            .map { it.trim().replace(" ", "") }
+            .filter { it.isNotEmpty() }
+        
+        return when {
+            documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 20) {
+                    val digit = lines[1].substring(19, 20)
+                    Log.d(TAG, "TD3 DOB Check Digit: '$digit'")
+                    digit
+                } else {
+                    Log.w(TAG, "Cannot extract TD3 DOB check digit")
+                    ""
+                }
+            }
+            documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 7) {
+                    val digit = lines[1].substring(6, 7)
+                    Log.d(TAG, "TD1 DOB Check Digit: '$digit'")
+                    digit
+                } else {
+                    Log.w(TAG, "Cannot extract TD1 DOB check digit")
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
+    
+    /**
+     * Extract date of expiry check digit from MRZ
+     * TD3 (Passport) Line 2: ICAO 9303 Position 27
+     * TD1 (ID Card) Line 2: Position 16
+     */
+    fun extractExpiryDateCheckDigit(mrzText: String, documentType: String): String {
+        val lines = mrzText.trim().split("\n")
+            .map { it.trim().replace(" ", "") }
+            .filter { it.isNotEmpty() }
+        
+        return when {
+            documentType.contains("Passport", ignoreCase = true) || documentType.contains("TD3", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 28) {
+                    val digit = lines[1].substring(27, 28)
+                    Log.d(TAG, "TD3 Expiry Check Digit: '$digit'")
+                    digit
+                } else {
+                    Log.w(TAG, "Cannot extract TD3 expiry check digit")
+                    ""
+                }
+            }
+            documentType.contains("ID", ignoreCase = true) || documentType.contains("TD1", ignoreCase = true) -> {
+                if (lines.size >= 2 && lines[1].length >= 17) {
+                    val digit = lines[1].substring(16, 17)
+                    Log.d(TAG, "TD1 Expiry Check Digit: '$digit'")
+                    digit
+                } else {
+                    Log.w(TAG, "Cannot extract TD1 expiry check digit")
+                    ""
+                }
+            }
+            else -> ""
+        }
+    }
 }
