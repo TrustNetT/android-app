@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import com.trustnet.nfc.JmrtdPassportReaderPace
 import com.trustnet.nfc.PassportReaderTD3
 import com.trustnet.nfc.PassportData
+import com.trustnet.nfc.PassportReaderCallback
 import kotlinx.coroutines.launch
 
 /**
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
  * This provides app control over NFC detection without system dialogs or external intents.
  * Reads MRZ directly from chip (authoritative source), does not use OCR data.
  */
-class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
+class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback, PassportReaderCallback {
     
     companion object {
         private const val TAG = "NFCProgressActivity"
@@ -121,6 +122,7 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
             "PASSPORT" -> {
                 Log.d(TAG, "PASSPORT (TD3) → Using BAC protocol (ICAO 9303)")
                 readerTD3 = PassportReaderTD3()
+                readerTD3!!.setStatusCallback(this)  // Set callback for UI updates
             }
             "ID", "ID_CARD" -> {
                 Log.d(TAG, "✓✓✓ MATCHED 'ID' or 'ID_CARD' → USING TD1 PACE READER ✓✓✓")
@@ -247,20 +249,63 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
     
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: Activity resumed (NFC not auto-enabled, waiting for button tap)")
-        // NFC reader mode is NOT enabled here - user must tap the button
+        Log.d(TAG, "onResume: Activity resumed")
+        
+        // CRITICAL: If we're in the middle of an NFC transaction, RE-ENABLE reader mode
+        // onPause() disabled it to prevent interruption, now we're back so restore exclusive control
+        if (isProcessing) {
+            Log.d(TAG, "onResume: Transaction in progress, RE-ENABLING NFC reader mode to maintain exclusive control")
+            try {
+                nfcAdapter.enableReaderMode(this, this, READER_MODE_FLAGS, null)
+                Log.d(TAG, "✓ NFC reader mode RE-ENABLED during ongoing transaction")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error re-enabling reader mode: ${e.message}")
+            }
+        } else {
+            Log.d(TAG, "onResume: No active transaction, waiting for button tap")
+        }
     }
     
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause: Disabling NFC reader mode")
         
+        // CRITICAL FIX: Only disable reader mode if transaction is complete
+        // During active transaction, briefly disable to prevent interference,
+        // then re-enable in onResume() to maintain exclusive NFC control
+        if (isProcessing) {
+            Log.d(TAG, "onPause: Transaction in progress, temporarily disabling reader mode")
+            try {
+                if (::nfcAdapter.isInitialized) {
+                    nfcAdapter.disableReaderMode(this)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error temporarily disabling reader mode: ${e.message}")
+            }
+            Log.d(TAG, "  (Will be RE-ENABLED in onResume)")
+        } else {
+            Log.d(TAG, "onPause: No active transaction, disabling reader mode permanently")
+            try {
+                if (::nfcAdapter.isInitialized) {
+                    nfcAdapter.disableReaderMode(this)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error disabling reader mode: ${e.message}")
+            }
+        }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy: Cleaning up resources")
+        
+        // Ensure reader mode is disabled during cleanup
         try {
-            if (::nfcAdapter.isInitialized) {
+            if (::nfcAdapter.isInitialized && isProcessing) {
+                Log.d(TAG, "onDestroy: Force-disabling reader mode during activity destruction")
                 nfcAdapter.disableReaderMode(this)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error disabling reader mode: ${e.message}")
+            Log.e(TAG, "Error during destruction cleanup: ${e.message}")
         }
     }
     
@@ -329,6 +374,9 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
                     Log.d(TAG, "DOB: ${passportData.dateOfBirth}")
                     Log.d(TAG, "Expiry: ${passportData.dateOfExpiry}")
                     
+                    // Mark transaction complete and disable reader mode
+                    finalizeNFCTransaction()
+                    
                     // Return to main activity with chip data
                     val resultIntent = Intent(this@NFCProgressActivity, MainActivity::class.java).apply {
                         putExtra("firstName", passportData.firstName)
@@ -345,21 +393,71 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
                     finish()
                 } else {
                     Log.e(TAG, "Failed to read chip: ${passportData.error}")
+                    
+                    // Mark transaction complete and disable reader mode
+                    finalizeNFCTransaction()
+                    
                     runOnUiThread {
                         statusTextView.text = "❌ Read failed:\n${passportData.error}"
                         Toast.makeText(this@NFCProgressActivity, "Error: ${passportData.error}", Toast.LENGTH_LONG).show()
-                        isProcessing = false
                     }
                 }
                 
             } catch (e: Exception) {
                 Log.e(TAG, "Exception reading chip: ${e.message}", e)
+                
+                // Mark transaction complete and disable reader mode
+                finalizeNFCTransaction()
+                
                 runOnUiThread {
                     statusTextView.text = "❌ Error:\n${e.message}"
                     Toast.makeText(this@NFCProgressActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
-                    isProcessing = false
                 }
             }
+        }
+    }
+    
+    /**
+     * Finalize NFC transaction: disable reader mode and reset state
+     * Called when transaction succeeds or fails
+     */
+    private fun finalizeNFCTransaction() {
+        Log.d(TAG, "finalizeNFCTransaction: Disabling NFC reader mode, transaction complete")
+        isProcessing = false
+        
+        try {
+            if (::nfcAdapter.isInitialized) {
+                nfcAdapter.disableReaderMode(this)
+                Log.d(TAG, "✓ NFC reader mode disabled, resources released")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during finalization: ${e.message}")
+        }
+    }
+    
+    /**
+     * PassportReaderCallback implementation: Receive status updates from reader
+     */
+    override fun onStatus(message: String) {
+        Log.d(TAG, "→ STATUS: $message")
+        runOnUiThread {
+            statusTextView.text = statusTextView.text.toString() + "\n→ $message"
+            // Keep it scrolled to bottom if it's a scroll view
+            if (statusTextView.parent is android.widget.ScrollView) {
+                (statusTextView.parent as android.widget.ScrollView).post {
+                    (statusTextView.parent as android.widget.ScrollView).fullScroll(
+                        android.widget.ScrollView.FOCUS_DOWN
+                    )
+                }
+            }
+        }
+    }
+    
+    override fun onError(message: String) {
+        Log.e(TAG, "✗ ERROR: $message")
+        runOnUiThread {
+            statusTextView.text = statusTextView.text.toString() + "\n✗ ERROR: $message"
+            Toast.makeText(this@NFCProgressActivity, "❌ $message", Toast.LENGTH_LONG).show()
         }
     }
 }

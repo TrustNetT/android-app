@@ -14,6 +14,22 @@ class PassportReaderTD3 {
     companion object {
         private const val TAG = "PassportReaderTD3"
     }
+    
+    private var statusCallback: PassportReaderCallback? = null
+    
+    fun setStatusCallback(callback: PassportReaderCallback) {
+        statusCallback = callback
+    }
+    
+    private fun reportStatus(message: String) {
+        Log.d(TAG, "[UI-STATUS] $message")
+        statusCallback?.onStatus(message)
+    }
+    
+    private fun reportError(message: String) {
+        Log.e(TAG, "[UI-ERROR] $message")
+        statusCallback?.onError(message)
+    }
 
     /**
      * Read a TD3 passport using BAC (Basic Access Control).
@@ -141,6 +157,100 @@ class PassportReaderTD3 {
                 passportService.doBAC(bacKey)
                 Log.d(TAG, "✓✓✓ BAC mutual authentication SUCCESS")
                 
+                // 8. Diagnostic: Test COM/SOD to determine if SM wrapper works post-BAC
+                Log.d(TAG, "")
+                testComSod(passportService)
+                
+                // ═══════════════════════════════════════════════════════════════════════
+                // PHASE 2: Manual Secure Messaging for DG File Reading (NEW CODE)
+                // ═══════════════════════════════════════════════════════════════════════
+                // After BAC success, use manual SM layer to read DG files
+                // This bypasses JMRTD's PassportService and uses SM-wrapped APDUs
+                Log.d(TAG, "")
+                Log.d(TAG, "═══ PHASE 2: MANUAL SECURE MESSAGING ═══")
+                reportStatus("Phase 2: Starting manual SM wrapper test")
+                
+                try {
+                    // Create SecureMessagingSession from MRZ components
+                    // This re-derives Kenc/Kmac identically to BAC (guaranteed compatible)
+                    Log.d(TAG, "Creating SecureMessagingSession from MRZ components...")
+                    reportStatus("Creating SM session from MRZ...")
+                    
+                    val smSession = SecureMessagingSession.createFromMrz(
+                        isoDep,
+                        documentNumber,
+                        dateOfBirth,
+                        dateOfExpiry
+                    )
+                    Log.d(TAG, "✓ SecureMessagingSession created with Kenc/Kmac derived from MRZ")
+                    reportStatus("✓ SM session created with Kenc/Kmac")
+                    
+                    // Test 1: SELECT EF.COM with SM wrapper
+                    Log.d(TAG, "→ Attempting selectCom() via manual SM wrapper...")
+                    reportStatus("Phase 2: Attempting SELECT EF.COM via SM...")
+                    
+                    val selectResponse = smSession.selectCom()
+                    Log.d(TAG, "  SELECT EF.COM response: ${selectResponse.toHexString()}")
+                    
+                    // Check status word
+                    if (selectResponse.size >= 2) {
+                        val sw = ((selectResponse[selectResponse.size - 2].toInt() and 0xFF) shl 8) or
+                                 (selectResponse[selectResponse.size - 1].toInt() and 0xFF)
+                        Log.d(TAG, "  Status Word: 0x${sw.toString(16).padStart(4, '0')}")
+                        
+                        if (sw == 0x9000) {
+                            Log.d(TAG, "✓✓✓ SELECT EF.COM via SM: SUCCESS")
+                            reportStatus("✓ SELECT EF.COM SUCCESS (SM working!)")
+                            Log.d(TAG, "  (SM wrapping is working! Proceeding to READ BINARY...)")
+                            
+                            // Test 2: READ BINARY to get COM file contents
+                            Log.d(TAG, "→ Attempting readBinary(0, 50) to read first 50 bytes of COM...")
+                            reportStatus("Phase 2: Reading COM file via SM...")
+                            
+                            val comData = smSession.readBinary(0, 50)
+                            Log.d(TAG, "  READ BINARY response: ${comData.toHexString()}")
+                            
+                            if (comData.size >= 2) {
+                                val readSw = ((comData[comData.size - 2].toInt() and 0xFF) shl 8) or
+                                             (comData[comData.size - 1].toInt() and 0xFF)
+                                Log.d(TAG, "  Status Word: 0x${readSw.toString(16).padStart(4, '0')}")
+                                
+                                if (readSw == 0x9000) {
+                                    Log.d(TAG, "✓✓✓ READ BINARY via SM: SUCCESS")
+                                    reportStatus("✓ READ BINARY SUCCESS - Manual SM FULLY FUNCTIONAL!")
+                                    Log.d(TAG, "  Manual SM layer is FULLY FUNCTIONAL!")
+                                } else {
+                                    Log.w(TAG, "⚠️  READ BINARY returned unexpected SW: 0x${readSw.toString(16).padStart(4, '0')}")
+                                    reportStatus("⚠ READ BINARY returned 0x${readSw.toString(16).padStart(4, '0')}")
+                                }
+                            }
+                        } else if (sw == 0x6987) {
+                            Log.e(TAG, "✗✗✗ SELECT EF.COM returned 0x6987 (SM OBJECTS MISSING)")
+                            reportError("✗ SM wrapper ERROR 0x6987 - SM objects missing or invalid")
+                            Log.e(TAG, "  SM wrapping is INCORRECT—verify ICAO 9303 compliance")
+                            Log.e(TAG, "  Expected: DO87 (encrypted data) + DO8E (MAC) in wrapped APDU")
+                            Log.e(TAG, "  Check: CLA byte should be 0x0C (SM enabled), not 0x00")
+                            Log.e(TAG, "  Check: Check digit algorithm in SecureMessagingSession")
+                        } else if (sw == 0x6988) {
+                            Log.e(TAG, "✗✗✗ SELECT EF.COM returned 0x6988 (SM OBJECTS INCORRECT)")
+                            reportError("✗ SM wrapper ERROR 0x6988 - Invalid SM (MAC mismatch or wrong format)")
+                            Log.e(TAG, "  This usually means Kenc/Kmac are wrong, or IV/MAC derivation is wrong")
+                            Log.e(TAG, "  Check: Verify ICAO 9303 Section 7 (Secure Messaging)")
+                            Log.e(TAG, "  Check: IV derivation from SSC")
+                            Log.e(TAG, "  Check: MAC computation over correct fields")
+                        } else {
+                            Log.w(TAG, "⚠️  SELECT EF.COM returned unexpected SW: 0x${sw.toString(16).padStart(4, '0')}")
+                            reportStatus("⚠ SELECT EF.COM returned 0x${sw.toString(16).padStart(4, '0')}")
+                        }
+                    }
+                    
+                } catch (e: Exception) {
+                    Log.e(TAG, "✗ Manual SM test failed: ${e.message}", e)
+                    reportError("✗ Manual SM test exception: ${e.message}")
+                    Log.e(TAG, "Stack trace:", e)
+                    // Don't return failure—this is Phase 2, BAC (Phase 1) succeeded
+                }
+                
                 return PassportData(
                     success = true,
                     error = ""
@@ -161,5 +271,50 @@ class PassportReaderTD3 {
                 error = "Exception in TD3 reader: ${e.message}"
             )
         }
+    }
+
+    /**
+     * Diagnostic: Test if COM and SOD files can be read after BAC.
+     * This tells us if JMRTD's SM wrapper is working post-BAC.
+     * 
+     * @param passportService PassportService (must have BAC already completed)
+     * @return true if COM/SOD read successfully, false if either fails
+     */
+    private fun testComSod(passportService: PassportService): Boolean {
+        try {
+            Log.d(TAG, "→ DIAGNOSTIC: Testing COM read...")
+            try {
+                val comStream = passportService.getInputStream(PassportService.EF_COM)
+                val comFile = org.jmrtd.lds.icao.COMFile(comStream)
+                Log.d(TAG, "  ✓ COM read successful (SM wrapper working for COM)")
+            } catch (e: Exception) {
+                Log.d(TAG, "  ✗ COM read failed: ${e.message}")
+                return false
+            }
+
+            Log.d(TAG, "→ DIAGNOSTIC: Testing SOD read...")
+            try {
+                val sodStream = passportService.getInputStream(PassportService.EF_SOD)
+                val sodFile = org.jmrtd.lds.SODFile(sodStream)
+                Log.d(TAG, "  ✓ SOD read successful (SM wrapper working for SOD)")
+            } catch (e: Exception) {
+                Log.d(TAG, "  ✗ SOD read failed: ${e.message}")
+                return false
+            }
+
+            Log.d(TAG, "✓ COM/SOD diagnostic: Both files read successfully")
+            return true
+
+        } catch (e: Exception) {
+            Log.e(TAG, "✗ COM/SOD diagnostic crashed: ${e.message}", e)
+            return false
+        }
+    }
+
+    /**
+     * Convert ByteArray to hex string (e.g., [0x12, 0xAB] → "12 AB")
+     */
+    private fun ByteArray.toHexString(): String {
+        return this.joinToString(" ") { "%02X".format(it) }
     }
 }
