@@ -374,21 +374,34 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback, Pass
                     Log.d(TAG, "Document: ${passportData.documentNumber}")
                     Log.d(TAG, "DOB: ${passportData.dateOfBirth}")
                     Log.d(TAG, "Expiry: ${passportData.dateOfExpiry}")
+                    Log.d(TAG, "Gender: ${passportData.gender}")
+                    Log.d(TAG, "Nationality: ${passportData.nationality}")
                     
-                    // CRITICAL: Show success on screen for 2-3 seconds so user can see it
-                    // before navigating away. Otherwise, activity transition causes screen to disappear
-                    // and user doesn't see the success message.
+                    // CRITICAL: Show extracted data on screen so user can verify what was read
+                    // Display for 4 seconds so user can read all the extracted fields
+                    val displayText = """✅ SUCCESS! Data read from chip:
+                        
+Name: ${passportData.firstName} ${passportData.lastName}
+Document: ${passportData.documentNumber}
+DOB: ${passportData.dateOfBirth}
+Expiry: ${passportData.dateOfExpiry}
+Gender: ${passportData.gender}
+Nationality: ${passportData.nationality}
+
+(Navigating in 3 seconds...)
+""".trimIndent()
+                    
                     runOnUiThread {
-                        statusTextView.text = "✅ SUCCESS!\n\nPassport data read from chip.\nNavigating in 2 seconds..."
+                        statusTextView.text = displayText
                         progressBar.visibility = View.GONE
                     }
                     
-                    Log.d(TAG, "Displaying success message for 2 seconds before navigation...")
+                    Log.d(TAG, "Displaying extracted data for 3 seconds before navigation...")
                     
-                    // Wait 2 seconds so user can see success (using coroutine delay)
-                    delay(2000)
+                    // Wait 3 seconds so user can verify the data that was extracted
+                    delay(3000)
                     
-                    Log.d(TAG, "2 seconds elapsed, now navigating to MainActivity...")
+                    Log.d(TAG, "3 seconds elapsed, now navigating to MainActivity...")
                     
                     // Mark transaction complete and disable reader mode
                     finalizeNFCTransaction()
