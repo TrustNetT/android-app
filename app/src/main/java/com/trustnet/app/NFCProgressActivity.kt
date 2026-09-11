@@ -16,6 +16,7 @@ import com.trustnet.nfc.PassportReaderTD3
 import com.trustnet.nfc.PassportData
 import com.trustnet.nfc.PassportReaderCallback
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 /**
  * NFC Scanning Activity with Direct Callback Handling
@@ -373,6 +374,21 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback, Pass
                     Log.d(TAG, "Document: ${passportData.documentNumber}")
                     Log.d(TAG, "DOB: ${passportData.dateOfBirth}")
                     Log.d(TAG, "Expiry: ${passportData.dateOfExpiry}")
+                    
+                    // CRITICAL: Show success on screen for 2-3 seconds so user can see it
+                    // before navigating away. Otherwise, activity transition causes screen to disappear
+                    // and user doesn't see the success message.
+                    runOnUiThread {
+                        statusTextView.text = "✅ SUCCESS!\n\nPassport data read from chip.\nNavigating in 2 seconds..."
+                        progressBar.visibility = View.GONE
+                    }
+                    
+                    Log.d(TAG, "Displaying success message for 2 seconds before navigation...")
+                    
+                    // Wait 2 seconds so user can see success (using coroutine delay)
+                    delay(2000)
+                    
+                    Log.d(TAG, "2 seconds elapsed, now navigating to MainActivity...")
                     
                     // Mark transaction complete and disable reader mode
                     finalizeNFCTransaction()

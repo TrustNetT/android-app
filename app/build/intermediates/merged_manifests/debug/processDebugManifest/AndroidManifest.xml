@@ -55,24 +55,24 @@
             android:exported="true"
             android:launchMode="singleTop" >
 
-            <!-- NFC Intent Filter: Handle NFC tag detection (TECH_DISCOVERED) -->
-            <intent-filter>
-                <action android:name="android.nfc.action.TECH_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <!-- NFC Intent Filter: Handle NDEF formatted tags -->
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="*/*" />
-            </intent-filter>
-            <!-- Accept all NFC tag types -->
-            <meta-data
-                android:name="android.nfc.action.TECH_DISCOVERED"
-                android:resource="@xml/nfc_tech_filter" />
+            <!--
+            CRITICAL: NFC intent filters REMOVED!
+            
+            Using NFCProgressActivity.enableReaderMode() instead (app-controlled, no intent interference).
+            This gives NFCProgressActivity exclusive NFC control without Android sending intents to other activities.
+            
+            If we keep the intent filters below, Android will:
+            1. Deliver TECH_DISCOVERED intent to MainActivity
+            2. Launch MainActivity to foreground
+            3. Pause NFCProgressActivity
+            4. Activity loses focus → screen disappears
+            5. Device NFC handler takes over
+            
+            With intent filters removed:
+            - Only NFCProgressActivity gets NFC callbacks (via enableReaderMode)
+            - No interference from Android's intent system
+            - App has exclusive control for entire BAC + Phase 2 transaction
+            -->
         </activity>
 
         <!-- Document Type Selection Activity -->

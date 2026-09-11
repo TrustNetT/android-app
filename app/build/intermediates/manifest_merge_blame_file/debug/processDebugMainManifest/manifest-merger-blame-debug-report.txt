@@ -51,7 +51,7 @@
 32-->[com.google.android.datatransport:transport-backend-cct:2.3.3] /home/jcgarcia/.gradle/caches/transforms-4/316d927ce39a37bec2e5b61c0d84c970/transformed/jetified-transport-backend-cct-2.3.3/AndroidManifest.xml:26:22-64
 33
 34    <application
-34-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:17:5-75:19
+34-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:17:5-78:19
 35        android:allowBackup="true"
 35-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:18:9-35
 36        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
@@ -86,7 +86,7 @@
 51            </intent-filter>
 52        </activity>
 53        <activity
-53-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:34:9-53:20
+53-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:34:9-56:20
 54            android:name="com.trustnet.app.MainActivity"
 54-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:35:13-41
 55            android:exported="true"
@@ -94,72 +94,57 @@
 56            android:launchMode="singleTop" >
 56-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:37:13-43
 57
-58            <!-- NFC Intent Filter: Handle NFC tag detection (TECH_DISCOVERED) -->
-59            <intent-filter>
-59-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:39:13-42:29
-60                <action android:name="android.nfc.action.TECH_DISCOVERED" />
-60-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:40:17-77
-60-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:40:25-74
-61
-62                <category android:name="android.intent.category.DEFAULT" />
-62-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:41:17-76
-62-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:41:27-73
-63            </intent-filter>
-64            <!-- NFC Intent Filter: Handle NDEF formatted tags -->
-65            <intent-filter>
-65-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:44:13-48:29
-66                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-66-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:45:17-77
-66-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:45:25-74
-67
-68                <category android:name="android.intent.category.DEFAULT" />
-68-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:41:17-76
-68-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:41:27-73
-69
-70                <data android:mimeType="*/*" />
-70-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:47:17-48
-70-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:47:23-45
-71            </intent-filter>
-72            <!-- Accept all NFC tag types -->
-73            <meta-data
-73-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:50:13-52:59
-74                android:name="android.nfc.action.TECH_DISCOVERED"
-74-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:51:17-66
-75                android:resource="@xml/nfc_tech_filter" />
-75-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:52:17-56
+58            <!--
+59            CRITICAL: NFC intent filters REMOVED!
+60            
+61            Using NFCProgressActivity.enableReaderMode() instead (app-controlled, no intent interference).
+62            This gives NFCProgressActivity exclusive NFC control without Android sending intents to other activities.
+63            
+64            If we keep the intent filters below, Android will:
+65            1. Deliver TECH_DISCOVERED intent to MainActivity
+66            2. Launch MainActivity to foreground
+67            3. Pause NFCProgressActivity
+68            4. Activity loses focus → screen disappears
+69            5. Device NFC handler takes over
+70            
+71            With intent filters removed:
+72            - Only NFCProgressActivity gets NFC callbacks (via enableReaderMode)
+73            - No interference from Android's intent system
+74            - App has exclusive control for entire BAC + Phase 2 transaction
+75            -->
 76        </activity>
 77
 78        <!-- Document Type Selection Activity -->
 79        <activity
-79-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:56:9-58:40
+79-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:59:9-61:40
 80            android:name="com.trustnet.app.DocumentTypeActivity"
-80-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:57:13-49
+80-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:60:13-49
 81            android:exported="false" />
-81-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:58:13-37
+81-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:61:13-37
 82
 83        <!-- Camera Activity for capturing document and extracting CAN -->
 84        <activity
-84-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:61:9-63:40
+84-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:64:9-66:40
 85            android:name="com.trustnet.app.CameraActivity"
-85-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:62:13-43
+85-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:65:13-43
 86            android:exported="false" />
-86-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:63:13-37
+86-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:66:13-37
 87
 88        <!-- Confirmation Activity for verifying and editing extracted MRZ data -->
 89        <activity
-89-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:66:9-68:40
+89-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:69:9-71:40
 90            android:name="com.trustnet.app.ConfirmationActivity"
-90-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:67:13-49
+90-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:70:13-49
 91            android:exported="false" />
-91-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:68:13-37
+91-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:71:13-37
 92
 93        <!-- NFC Scanning Activity (uses app-controlled NfcAdapter.enableReaderMode) -->
 94        <activity
-94-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:71:9-73:40
+94-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:74:9-76:40
 95            android:name="com.trustnet.app.NFCProgressActivity"
-95-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:72:13-48
+95-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:75:13-48
 96            android:exported="false" />
-96-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:73:13-37
+96-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:76:13-37
 97
 98        <service
 98-->[androidx.camera:camera-camera2:1.3.0] /home/jcgarcia/.gradle/caches/transforms-4/bf5445bfd022a8b084522c8bd4c654b5/transformed/jetified-camera-camera2-1.3.0/AndroidManifest.xml:24:9-33:19
