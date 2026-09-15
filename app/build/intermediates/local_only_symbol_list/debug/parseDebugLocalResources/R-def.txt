@@ -39,6 +39,7 @@ id bacComponentsTextView
 id bacPasswordTextView
 id birthDateValue
 id canEditText
+id cancelButton
 id confirmButton
 id dobEditText
 id dobTextView
@@ -56,6 +57,7 @@ id expiryEditText
 id expiryTextView
 id expiryValue
 id firstNameValue
+id fullNameValue
 id genderValue
 id idCardButton
 id lastNameValue
@@ -83,6 +85,7 @@ layout activity_document_confirmation
 layout activity_document_type
 layout activity_main
 layout activity_nfc_progress
+layout activity_passport_confirmation
 layout activity_scan_result
 layout activity_splash
 mipmap ic_launcher

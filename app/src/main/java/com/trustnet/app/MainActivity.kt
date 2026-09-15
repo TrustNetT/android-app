@@ -40,21 +40,42 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "NFC not available", Toast.LENGTH_SHORT).show()
         }
         
-        // Check if we have NFC result data from the workflow
-        val nfcResultData = intent.getBundleExtra("nfcResultData")
+        // Check if we have passport data from PassportConfirmationActivity
+        // PassportConfirmationActivity passes individual extras from NFCProgressActivity
+        val success = intent.getBooleanExtra("success", false)
         
-        if (nfcResultData != null) {
-            // Display NFC scan results
-            Log.d(TAG, "Displaying NFC scan results")
+        if (success) {
+            // Display NFC scan results from confirmed passport data
+            Log.d(TAG, "Displaying confirmed passport data")
             setContentView(R.layout.activity_scan_result)
             resultContainer = findViewById(R.id.resultContainer)
-            showScanResult(nfcResultData)
+            
+            // Create bundle from individual extras for compatibility with showScanResult
+            val resultBundle = Bundle().apply {
+                putString("firstName", intent.getStringExtra("firstName") ?: "")
+                putString("lastName", intent.getStringExtra("lastName") ?: "")
+                putString("gender", intent.getStringExtra("gender") ?: "")
+                putString("nationality", intent.getStringExtra("nationality") ?: "")
+                putString("documentNumber", intent.getStringExtra("documentNumber") ?: "")
+                putString("birthDate", intent.getStringExtra("dateOfBirth") ?: "")
+                putString("expiryDate", intent.getStringExtra("dateOfExpiry") ?: "")
+            }
+            showScanResult(resultBundle)
         } else {
-            // Start with document type selection
-            Log.d(TAG, "Starting document type selection workflow")
-            val documentTypeIntent = Intent(this, DocumentTypeActivity::class.java)
-            startActivity(documentTypeIntent)
-            finish()
+            // Check legacy format (nfcResultData bundle)
+            val nfcResultData = intent.getBundleExtra("nfcResultData")
+            if (nfcResultData != null) {
+                Log.d(TAG, "Displaying NFC scan results (legacy format)")
+                setContentView(R.layout.activity_scan_result)
+                resultContainer = findViewById(R.id.resultContainer)
+                showScanResult(nfcResultData)
+            } else {
+                // Start with document type selection
+                Log.d(TAG, "Starting document type selection workflow")
+                val documentTypeIntent = Intent(this, DocumentTypeActivity::class.java)
+                startActivity(documentTypeIntent)
+                finish()
+            }
         }
     }
 

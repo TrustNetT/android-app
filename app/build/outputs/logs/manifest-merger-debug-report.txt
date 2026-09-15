@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-80:12
-INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-80:12
-INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-80:12
-INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-80:12
+ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-85:12
+INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:2:1-85:12
 MERGED from [com.google.android.material:material:1.10.0] /home/jcgarcia/.gradle/caches/transforms-4/ef257e7b37f094ecae22ecb7112d5e12/transformed/material-1.10.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.camera:camera-video:1.3.0] /home/jcgarcia/.gradle/caches/transforms-4/1a7f9fa1a8075c4abcaf9d61c421efa5/transformed/jetified-camera-video-1.3.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.camera:camera-lifecycle:1.3.0] /home/jcgarcia/.gradle/caches/transforms-4/cff19265679f7c442cbe406edcd93352/transformed/jetified-camera-lifecycle-1.3.0/AndroidManifest.xml:2:1-7:12
@@ -97,8 +97,8 @@ ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/Android
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:14:9-47
 application
-ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:17:5-78:19
-INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:17:5-78:19
+ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:17:5-83:19
+INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:17:5-83:19
 MERGED from [com.google.android.material:material:1.10.0] /home/jcgarcia/.gradle/caches/transforms-4/ef257e7b37f094ecae22ecb7112d5e12/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.10.0] /home/jcgarcia/.gradle/caches/transforms-4/ef257e7b37f094ecae22ecb7112d5e12/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.camera:camera-camera2:1.3.0] /home/jcgarcia/.gradle/caches/transforms-4/bf5445bfd022a8b084522c8bd4c654b5/transformed/jetified-camera-camera2-1.3.0/AndroidManifest.xml:23:5-34:19
@@ -201,6 +201,12 @@ ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/Android
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:76:13-37
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:75:13-48
+activity#com.trustnet.app.PassportConfirmationActivity
+ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:79:9-81:40
+	android:exported
+		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:81:13-37
+	android:name
+		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:80:13-57
 uses-sdk
 INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml

@@ -95,6 +95,11 @@
             android:name="com.trustnet.app.NFCProgressActivity"
             android:exported="false" />
 
+        <!-- Passport Confirmation Activity (displays extracted data for user verification) -->
+        <activity
+            android:name="com.trustnet.app.PassportConfirmationActivity"
+            android:exported="false" />
+
         <service
             android:name="androidx.camera.core.impl.MetadataHolderService"
             android:enabled="false"

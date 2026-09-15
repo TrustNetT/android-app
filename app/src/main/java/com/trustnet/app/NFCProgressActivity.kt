@@ -406,8 +406,8 @@ Nationality: ${passportData.nationality}
                     // Mark transaction complete and disable reader mode
                     finalizeNFCTransaction()
                     
-                    // Return to main activity with chip data
-                    val resultIntent = Intent(this@NFCProgressActivity, MainActivity::class.java).apply {
+                    // Navigate to passport confirmation screen for user verification
+                    val resultIntent = Intent(this@NFCProgressActivity, PassportConfirmationActivity::class.java).apply {
                         putExtra("firstName", passportData.firstName)
                         putExtra("lastName", passportData.lastName)
                         putExtra("documentNumber", passportData.documentNumber)

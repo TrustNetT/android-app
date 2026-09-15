@@ -75,6 +75,11 @@
             android:name=".NFCProgressActivity"
             android:exported="false" />
 
+        <!-- Passport Confirmation Activity (displays extracted data for user verification) -->
+        <activity
+            android:name=".PassportConfirmationActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

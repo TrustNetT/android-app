@@ -84,6 +84,10 @@
         "source": "com.trustnet.app-main-40:/xml/provider_paths.xml"
     },
     {
+        "merged": "com.trustnet.app-debug-38:/layout_activity_passport_confirmation.xml.flat",
+        "source": "com.trustnet.app-main-40:/layout/activity_passport_confirmation.xml"
+    },
+    {
         "merged": "com.trustnet.app-debug-38:/drawable_card_background.xml.flat",
         "source": "com.trustnet.app-main-40:/drawable/card_background.xml"
     },

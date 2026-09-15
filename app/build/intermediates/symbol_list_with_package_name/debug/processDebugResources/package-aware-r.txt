@@ -3129,6 +3129,7 @@ id bottom
 id bounce
 id buttonPanel
 id canEditText
+id cancelButton
 id cancel_button
 id center
 id centerCrop
@@ -3236,6 +3237,7 @@ id flip
 id floating
 id forever
 id fragment_container_view_tag
+id fullNameValue
 id fullscreen_header
 id genderValue
 id ghost_view
@@ -3657,6 +3659,7 @@ layout activity_document_confirmation
 layout activity_document_type
 layout activity_main
 layout activity_nfc_progress
+layout activity_passport_confirmation
 layout activity_scan_result
 layout activity_splash
 layout custom_dialog
