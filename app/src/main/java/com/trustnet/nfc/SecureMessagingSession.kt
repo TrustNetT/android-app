@@ -251,14 +251,27 @@ class SecureMessagingSession(
         val p1 = plainApdu[2]
         val p2 = plainApdu[3]
         
-        // Extract data payload (if present)
+        // Extract data payload (skip Lc byte at position 4)
+        // ICAO 9303: Only encrypt the actual data, not the Lc byte!
+        // Plain APDU structure: CLA | INS | P1 | P2 | [Lc] | [Data]
+        // Where Lc is the length of Data
         var dataPayload = ByteArray(0)
-        if (plainApdu.size > 4) {
-            dataPayload = plainApdu.copyOfRange(4, plainApdu.size)
+        if (plainApdu.size > 5) {
+            // Extract Lc byte
+            val lc = plainApdu[4].toInt() and 0xFF
+            Log.d(TAG, "  [LC] Length field: $lc bytes")
+            
+            // Extract only the data (skip Lc byte at position 4)
+            // Data starts at position 5
+            if (lc > 0) {
+                val dataStart = 5
+                val dataEnd = minOf(dataStart + lc, plainApdu.size)
+                dataPayload = plainApdu.copyOfRange(dataStart, dataEnd)
+            }
         }
         
         Log.d(TAG, "  [APDU] CLA=${cla.toHexString()}, INS=${ins.toHexString()}, " +
-              "P1=${p1.toHexString()}, P2=${p2.toHexString()}, Data=${dataPayload.toHexString()}")
+              "P1=${p1.toHexString()}, P2=${p2.toHexString()}, Data=${dataPayload.toHexString()} (data only, Lc excluded)")
         
         // ═══════════════════════════════════════════════════════════════════════
         // STEP 3: Derive IV from SSC
