@@ -78,9 +78,12 @@ class SecureMessagingSession(
             Log.d(TAG, "  Kenc (24 bytes): ${kenc24.toHexString()}")
             Log.d(TAG, "  Kmac (24 bytes): ${kmac24.toHexString()}")
             
-            // Initialize SSC to all zeros (will be set to correct value per ICAO 9303)
+            // Initialize SSC to 0x0000000000000001 per ICAO 9303 (NOT 0x00..00!)
+            // This is CRITICAL: SSC must start at 0x00..01 after BAC succeeds
+            // If SSC = 0x00..00, IV and MAC computations will be wrong → 0x6988 errors
             val initialSsc = ByteArray(8) { 0x00 }
-            Log.d(TAG, "  SSC initialized: ${initialSsc.toHexString()}")
+            initialSsc[7] = 0x01  // Set last byte to 0x01 → 0x0000000000000001
+            Log.d(TAG, "  SSC initialized to 0x${initialSsc.toHexString()} (CRITICAL: starts at 0x00..01 per ICAO 9303)")
             
             return SecureMessagingSession(isoDep, kenc24, kmac24, initialSsc)
         }
