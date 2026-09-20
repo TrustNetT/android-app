@@ -1,1 +1,50 @@
-bash: ./gradlew: No such file or directory
+openjdk version "21.0.12" 2026-07-21
+OpenJDK Runtime Environment (build 21.0.12+8-1-24.04-Ubuntu)
+OpenJDK 64-Bit Server VM (build 21.0.12+8-1-24.04-Ubuntu, mixed mode, sharing)
+
+> Configure project :app
+e: file:///home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:9:30: Unresolved reference: util
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* Where:
+Build file '/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts' line: 9
+
+* What went wrong:
+Script compilation error:
+
+  Line 9: val versionProperties = java.util.Properties()
+                                       ^ Unresolved reference: util
+
+1 error
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* Where:
+Build file '/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts' line: 9
+
+* What went wrong:
+Script compilation error:
+
+  Line 9: val versionProperties = java.util.Properties()
+                                       ^ Unresolved reference: util
+
+1 error
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+BUILD FAILED in 1s

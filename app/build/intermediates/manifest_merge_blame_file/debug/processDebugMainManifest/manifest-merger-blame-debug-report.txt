@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-3    package="com.trustnet.app"
+3    package="com.trustnetid.app.debug"
 4    android:versionCode="1"
-5    android:versionName="1.0.0" >
+5    android:versionName="0.1.0-dev" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="23"
@@ -34,12 +34,12 @@
 24
 25    <permission
 25-->[androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
-26        android:name="com.trustnet.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+26        android:name="com.trustnetid.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
 26-->[androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
 27        android:protectionLevel="signature" />
 27-->[androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
 28
-29    <uses-permission android:name="com.trustnet.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+29    <uses-permission android:name="com.trustnetid.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
 29-->[androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
 29-->[androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
 30    <!-- <uses-sdk android:minSdkVersion="14"/> -->
@@ -70,7 +70,7 @@
 43-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:23:9-49
 44        <activity
 44-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:25:9-32:20
-45            android:name="com.trustnet.app.SplashActivity"
+45            android:name="com.trustnetid.app.SplashActivity"
 45-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:26:13-43
 46            android:exported="true" >
 46-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:27:13-36
@@ -87,7 +87,7 @@
 52        </activity>
 53        <activity
 53-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:34:9-56:20
-54            android:name="com.trustnet.app.MainActivity"
+54            android:name="com.trustnetid.app.MainActivity"
 54-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:35:13-41
 55            android:exported="true"
 55-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:36:13-36
@@ -117,7 +117,7 @@
 78        <!-- Document Type Selection Activity -->
 79        <activity
 79-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:59:9-61:40
-80            android:name="com.trustnet.app.DocumentTypeActivity"
+80            android:name="com.trustnetid.app.DocumentTypeActivity"
 80-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:60:13-49
 81            android:exported="false" />
 81-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:61:13-37
@@ -125,7 +125,7 @@
 83        <!-- Camera Activity for capturing document and extracting CAN -->
 84        <activity
 84-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:64:9-66:40
-85            android:name="com.trustnet.app.CameraActivity"
+85            android:name="com.trustnetid.app.CameraActivity"
 85-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:65:13-43
 86            android:exported="false" />
 86-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:66:13-37
@@ -133,7 +133,7 @@
 88        <!-- Confirmation Activity for verifying and editing extracted MRZ data -->
 89        <activity
 89-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:69:9-71:40
-90            android:name="com.trustnet.app.ConfirmationActivity"
+90            android:name="com.trustnetid.app.ConfirmationActivity"
 90-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:70:13-49
 91            android:exported="false" />
 91-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:71:13-37
@@ -141,7 +141,7 @@
 93        <!-- NFC Scanning Activity (uses app-controlled NfcAdapter.enableReaderMode) -->
 94        <activity
 94-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:74:9-76:40
-95            android:name="com.trustnet.app.NFCProgressActivity"
+95            android:name="com.trustnetid.app.NFCProgressActivity"
 95-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:75:13-48
 96            android:exported="false" />
 96-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:76:13-37
@@ -149,7 +149,7 @@
 98        <!-- Passport Confirmation Activity (displays extracted data for user verification) -->
 99        <activity
 99-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:79:9-81:40
-100            android:name="com.trustnet.app.PassportConfirmationActivity"
+100            android:name="com.trustnetid.app.PassportConfirmationActivity"
 100-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:80:13-57
 101            android:exported="false" />
 101-->/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:81:13-37
@@ -174,7 +174,7 @@
 112-->[androidx.emoji2:emoji2:1.2.0] /home/jcgarcia/.gradle/caches/transforms-4/ed76fc33766b843ecf5994a1b9362f85/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
 113            android:name="androidx.startup.InitializationProvider"
 113-->[androidx.emoji2:emoji2:1.2.0] /home/jcgarcia/.gradle/caches/transforms-4/ed76fc33766b843ecf5994a1b9362f85/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
-114            android:authorities="com.trustnet.app.androidx-startup"
+114            android:authorities="com.trustnetid.app.debug.androidx-startup"
 114-->[androidx.emoji2:emoji2:1.2.0] /home/jcgarcia/.gradle/caches/transforms-4/ed76fc33766b843ecf5994a1b9362f85/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
 115            android:exported="false" >
 115-->[androidx.emoji2:emoji2:1.2.0] /home/jcgarcia/.gradle/caches/transforms-4/ed76fc33766b843ecf5994a1b9362f85/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
@@ -230,7 +230,7 @@
 142-->[com.google.mlkit:common:18.8.0] /home/jcgarcia/.gradle/caches/transforms-4/68d01c9c17bde3048beddf201b511c85/transformed/jetified-common-18.8.0/AndroidManifest.xml:9:9-13:38
 143            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
 143-->[com.google.mlkit:common:18.8.0] /home/jcgarcia/.gradle/caches/transforms-4/68d01c9c17bde3048beddf201b511c85/transformed/jetified-common-18.8.0/AndroidManifest.xml:10:13-78
-144            android:authorities="com.trustnet.app.mlkitinitprovider"
+144            android:authorities="com.trustnetid.app.debug.mlkitinitprovider"
 144-->[com.google.mlkit:common:18.8.0] /home/jcgarcia/.gradle/caches/transforms-4/68d01c9c17bde3048beddf201b511c85/transformed/jetified-common-18.8.0/AndroidManifest.xml:11:13-69
 145            android:exported="false"
 145-->[com.google.mlkit:common:18.8.0] /home/jcgarcia/.gradle/caches/transforms-4/68d01c9c17bde3048beddf201b511c85/transformed/jetified-common-18.8.0/AndroidManifest.xml:12:13-37

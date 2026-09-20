@@ -22,9 +22,9 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFF</color>
-    <string name="app_name">TrustNet</string>
+    <string name="app_name">TrustNetID</string>
     <string name="preview_image">Document preview</string>
-    <string name="splash_subtitle">Decentralized Trust Network</string>
+    <string name="splash_subtitle">Identity Verification</string>
     <style name="Theme.TrustNetApp" parent="Theme.MaterialComponents.Light.DarkActionBar">
         
         <item name="colorPrimary">@color/purple_500</item>

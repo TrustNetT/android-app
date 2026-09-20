@@ -6,6 +6,11 @@
     android:orientation="vertical"
     android:background="@color/black">
 
+    <!-- Header with Version -->
+    <include
+        android:id="@+id/header"
+        layout="@layout/header_version" />
+
     <!-- Title -->
     <TextView
         android:id="@+id/titleTextView"
@@ -32,7 +37,7 @@
             android:layout_height="match_parent" />
 
         <!-- Document Alignment Overlay -->
-        <com.trustnet.app.DocumentAlignmentOverlayView
+        <com.trustnetid.app.DocumentAlignmentOverlayView
             android:id="@+id/alignmentOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

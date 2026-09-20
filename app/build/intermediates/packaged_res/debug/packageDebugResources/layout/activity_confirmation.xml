@@ -6,6 +6,11 @@
     android:padding="16dp"
     android:background="@color/white">
 
+    <!-- Header with Version -->
+    <include
+        android:id="@+id/header"
+        layout="@layout/header_version" />
+
     <!-- Header -->
     <TextView
         android:id="@+id/titleTextView"

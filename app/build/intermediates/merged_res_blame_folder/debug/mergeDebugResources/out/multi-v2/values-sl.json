@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.trustnet.app-mergeDebugResources-36:/values-sl/values-sl.xml",
+            "outputFile": "com.trustnetid.app-mergeDebugResources-36:/values-sl/values-sl.xml",
             "map": [
                 {
                     "source": "/home/jcgarcia/.gradle/caches/transforms-4/0aed691f6c92a68c47ae42d0a4149642/transformed/jetified-play-services-basement-18.1.0/res/values-sl/values.xml",

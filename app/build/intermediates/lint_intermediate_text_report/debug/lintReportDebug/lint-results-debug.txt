@@ -1,0 +1,846 @@
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:23: Warning: Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the android.os.Build.VERSION_CODES javadoc for details. [OldTargetApi]
+        targetSdk = 34
+        ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "OldTargetApi":
+   When your application runs on a version of Android that is more recent than
+   your targetSdkVersion specifies that it has been tested with, various
+   compatibility modes kick in. This ensures that your application continues
+   to work, but it may look out of place. For example, if the targetSdkVersion
+   is less than 14, your app may get an option button in the UI.
+
+   To fix this issue, set the targetSdkVersion to the highest available value.
+   Then test your app to make sure everything works correctly. You may want to
+   consult the compatibility notes to see what changes apply to each version
+   you are adding support for:
+   https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
+   as well as follow this guide:
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.
+   html
+
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.html
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/SplashActivity.kt:11: Warning: The application should not provide its own launch screen [CustomSplashScreen]
+class SplashActivity : AppCompatActivity() {
+      ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "CustomSplashScreen":
+   Starting in Android 12 (API 31+), the application's Launch Screen is
+   provided by the system and the application should not create its own,
+   otherwise the user will see two splashscreens. Please check the
+   SplashScreen class to check how the Splash Screen can be controlled and
+   customized.
+
+   https://developer.android.com/guide/topics/ui/splash-screen
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:60: Warning: A newer version of androidx.appcompat:appcompat than 1.6.1 is available: 1.8.0 [GradleDependency]
+    implementation("androidx.appcompat:appcompat:1.6.1")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:61: Warning: A newer version of androidx.core:core-ktx than 1.12.0 is available: 1.19.0 [GradleDependency]
+    implementation("androidx.core:core-ktx:1.12.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:62: Warning: A newer version of com.google.android.material:material than 1.10.0 is available: 1.14.0 [GradleDependency]
+    implementation("com.google.android.material:material:1.10.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:65: Warning: A newer version of androidx.camera:camera-core than 1.3.0 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-core:1.3.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:66: Warning: A newer version of androidx.camera:camera-camera2 than 1.3.0 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-camera2:1.3.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:67: Warning: A newer version of androidx.camera:camera-lifecycle than 1.3.0 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:68: Warning: A newer version of androidx.camera:camera-view than 1.3.0 is available: 1.6.2 [GradleDependency]
+    implementation("androidx.camera:camera-view:1.3.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:71: Warning: A newer version of com.google.mlkit:text-recognition than 16.0.0 is available: 16.0.1 [GradleDependency]
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/build.gradle.kts:80: Warning: A newer version of androidx.test.espresso:espresso-core than 3.5.1 is available: 3.7.0 [GradleDependency]
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/nfc/crypto/PaceCryptoUtils.kt:57: Warning: The BC provider is deprecated and as of Android P this method will throw a NoSuchAlgorithmException. To fix this you should stop specifying a provider and use the default implementation [DeprecatedProvider]
+            val cipher = Cipher.getInstance("AES/ECB/NoPadding", PROVIDER)
+                                                                 ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/nfc/crypto/PaceCryptoUtils.kt:70: Warning: The BC provider is deprecated and as of Android P this method will throw a NoSuchAlgorithmException. To fix this you should stop specifying a provider and use the default implementation [DeprecatedProvider]
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", PROVIDER)
+                                                                    ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/nfc/crypto/PaceCryptoUtils.kt:81: Warning: The BC provider is deprecated and as of Android P this method will throw a NoSuchAlgorithmException. To fix this you should stop specifying a provider and use the default implementation [DeprecatedProvider]
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding", PROVIDER)
+                                                                    ~~~~~~~~
+
+   Explanation for issues of type "DeprecatedProvider":
+   The BC provider has been deprecated and will not be provided when
+   targetSdkVersion is P or higher.
+
+   https://android-developers.googleblog.com/2018/03/cryptography-changes-in-android-p.html
+   https://goo.gle/DeprecatedProvider
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/nfc/crypto/PaceCryptoUtils.kt:57: Warning: ECB encryption mode should not be used [GetInstance]
+            val cipher = Cipher.getInstance("AES/ECB/NoPadding", PROVIDER)
+                                             ~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "GetInstance":
+   Cipher#getInstance should not be called with ECB as the cipher mode or
+   without setting the cipher mode because the default mode on android is ECB,
+   which is insecure.
+
+   https://goo.gle/GetInstance
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/DocumentAlignmentOverlayView.kt:91: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val frameRect = RectF(frameLeft, frameTop, frameRight, frameBottom)
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "DrawAllocation":
+   You should avoid allocating objects during a drawing or layout operation.
+   These are called frequently, so a smooth UI can be interrupted by garbage
+   collection pauses caused by the object allocations.
+
+   The way this is generally handled is to allocate the needed objects up
+   front and to reuse them for each drawing operation.
+
+   Some methods allocate memory on your behalf (such as Bitmap.create), and
+   these should be handled in the same way.
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_camera.xml:7: Warning: Possible overdraw: Root element paints background @color/black with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/black">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:7: Warning: Possible overdraw: Root element paints background #FFFFFF with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="#FFFFFF">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_type.xml:8: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_main.xml:6: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_nfc_progress.xml:6: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:6: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:7: Warning: Possible overdraw: Root element paints background @color/white with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/white">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_splash.xml:7: Warning: Possible overdraw: Root element paints background @color/splash_background with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/splash_background">
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/header_version.xml:6: Warning: Possible overdraw: Root element paints background @color/purple_700 with a theme that also paints a background (inferred theme is @style/Theme.TrustNetApp) [Overdraw]
+    android:background="@color/purple_700"
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "Overdraw":
+   If you set a background drawable on a root view, then you should use a
+   custom theme where the theme background is null. Otherwise, the theme
+   background will be painted first, only to have your custom background
+   completely cover it; this is called "overdraw".
+
+   NOTE: This detector relies on figuring out which layouts are associated
+   with which activities based on scanning the Java code, and it's currently
+   doing that using an inexact pattern matching algorithm. Therefore, it can
+   incorrectly conclude which activity the layout is associated with and then
+   wrongly complain that a background-theme is hidden.
+
+   If you want your custom background on multiple pages, then you should
+   consider making a custom theme with your custom background and just using
+   that theme instead of a root element background.
+
+   Of course it's possible that your custom drawable is translucent and you
+   want it to be mixed with the background. However, you will get better
+   performance if you pre-mix the background with your drawable and use that
+   resulting image or color as a custom theme background instead.
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:2: Warning: The resource R.layout.activity_confirmation appears to be unused [UnusedResources]
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:2: Warning: The resource R.layout.activity_document_confirmation appears to be unused [UnusedResources]
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_main.xml:2: Warning: The resource R.layout.activity_main appears to be unused [UnusedResources]
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/app_icon_background.xml:2: Warning: The resource R.drawable.app_icon_background appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/button_filled.xml:2: Warning: The resource R.drawable.button_filled appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/button_outline.xml:2: Warning: The resource R.drawable.button_outline appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:8: Warning: The resource R.color.purple_200 appears to be unused [UnusedResources]
+    <color name="purple_200">#FFBB86FC</color>
+           ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:18: Warning: The resource R.color.purple appears to be unused [UnusedResources]
+    <color name="purple">#6200EE</color>
+           ~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:19: Warning: The resource R.color.green appears to be unused [UnusedResources]
+    <color name="green">#00C853</color>
+           ~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:22: Warning: The resource R.color.light_gray appears to be unused [UnusedResources]
+    <color name="light_gray">#CCCCCC</color>
+           ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:23: Warning: The resource R.color.light_purple appears to be unused [UnusedResources]
+    <color name="light_purple">#F3E5F5</color>
+           ~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:24: Warning: The resource R.color.primary_blue appears to be unused [UnusedResources]
+    <color name="primary_blue">#1976D2</color>
+           ~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:29: Warning: The resource R.color.card_background appears to be unused [UnusedResources]
+    <color name="card_background">#F5F5F5</color>
+           ~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/colors.xml:30: Warning: The resource R.color.card_border appears to be unused [UnusedResources]
+    <color name="card_border">#E0E0E0</color>
+           ~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/edit_text_background.xml:2: Warning: The resource R.drawable.edit_text_background appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/edit_text_border.xml:2: Warning: The resource R.drawable.edit_text_border appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/ic_launcher_background.xml:2: Warning: The resource R.drawable.ic_launcher_background appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/ic_launcher_foreground.xml:2: Warning: The resource R.drawable.ic_launcher_foreground appears to be unused [UnusedResources]
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/xml/nfc_tech_filter.xml:2: Warning: The resource R.xml.nfc_tech_filter appears to be unused [UnusedResources]
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/xml/provider_paths.xml:2: Warning: The resource R.xml.provider_paths appears to be unused [UnusedResources]
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+^
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/values/strings.xml:5: Warning: The resource R.string.preview_image appears to be unused [UnusedResources]
+    <string name="preview_image">Document preview</string>
+            ~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/text_view_background.xml:2: Warning: The resource R.drawable.text_view_background appears to be unused [UnusedResources]
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+^
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/drawable/trustnet_logo.png: Warning: Found bitmap drawable res/drawable/trustnet_logo.png in densityless folder [IconLocation]
+
+   Explanation for issues of type "IconLocation":
+   The res/drawable folder is intended for density-independent graphics such
+   as shapes defined in XML. For bitmaps, move it to drawable-mdpi and
+   consider providing higher and lower resolution versions in drawable-ldpi,
+   drawable-hdpi and drawable-xhdpi. If the icon really is density independent
+   (for example a solid color) you can place it in drawable-nodpi.
+
+   https://developer.android.com/guide/practices/screens_support.html
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:332: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:345: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:186: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:196: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:182: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:192: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:262: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:273: Warning: Buttons in button bars should be borderless; use style="?android:attr/buttonBarButtonStyle" (and ?android:attr/buttonBarStyle on the parent) [ButtonStyle]
+        <Button
+         ~~~~~~
+
+   Explanation for issues of type "ButtonStyle":
+   Button bars typically use a borderless style for the buttons. Set the
+   style="?android:attr/buttonBarButtonStyle" attribute on each of the
+   buttons, and set style="?android:attr/buttonBarStyle" on the parent layout
+
+   https://d.android.com/r/studio-ui/designer/material/dialogs
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_splash.xml:43: Warning: Avoid using sizes smaller than 11sp: 8sp [SmallSp]
+        android:textSize="8sp"
+        ~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/header_version.xml:27: Warning: Avoid using sizes smaller than 11sp: 9sp [SmallSp]
+        android:textSize="9sp"
+        ~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SmallSp":
+   Avoid using sizes smaller than 11sp.
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:56: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:76: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:96: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:116: Warning: Missing autofillHints attribute [Autofill]
+            <EditText
+             ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:69: Warning: Missing autofillHints attribute [Autofill]
+                <EditText
+                 ~~~~~~~~
+
+   Explanation for issues of type "Autofill":
+   Specify an autofillHints attribute when targeting SDK version 26 or higher
+   or explicitly specify that the view is not important for autofill. Your app
+   can help an autofill service classify the data correctly by providing the
+   meaning of each view that could be autofillable, such as views representing
+   usernames, passwords, credit card fields, email addresses, etc.
+
+   The hints can have any value, but it is recommended to use predefined
+   values like 'username' for a username or 'creditCardNumber' for a credit
+   card number. For a list of all predefined autofill hint constants, see the
+   AUTOFILL_HINT_ constants in the View reference at
+   https://developer.android.com/reference/android/view/View.html.
+
+   You can mark a view unimportant for autofill by specifying an
+   importantForAutofill attribute on that view or a parent view. See
+   https://developer.android.com/reference/android/view/View.html#setImportant
+   ForAutofill(int).
+
+   https://developer.android.com/guide/topics/text/autofill.html
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_main.xml:22: Warning: Missing contentDescription attribute on image [ContentDescription]
+        <ImageView
+         ~~~~~~~~~
+
+   Explanation for issues of type "ContentDescription":
+   Non-textual widgets like ImageViews and ImageButtons should use the
+   contentDescription attribute to specify a textual description of the widget
+   such that screen readers and other accessibility tools can adequately
+   describe the user interface.
+
+   Note that elements in application screens that are purely decorative and do
+   not provide any content or enable a user action should not have
+   accessibility content descriptions. In this case, set their descriptions to
+   @null. If your app's minSdkVersion is 16 or higher, you can instead set
+   these graphical elements' android:importantForAccessibility attributes to
+   no.
+
+   Note that for text fields, you should not set both the hint and the
+   contentDescription attributes since the hint will never be shown. Just set
+   the hint.
+
+   https://developer.android.com/guide/topics/ui/accessibility/apps#special-cases
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:79: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        titleTextView.text = "Capture $documentType Document"
+                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:79: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        titleTextView.text = "Capture $documentType Document"
+                              ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:79: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        titleTextView.text = "Capture $documentType Document"
+                                                   ~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:155: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "Position document in frame..."
+                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:163: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                    statusTextView.text = "Camera binding failed: ${exc.message}"
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:163: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "Camera binding failed: ${exc.message}"
+                                           ~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:169: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                statusTextView.text = "Camera initialization failed: ${exc.message}"
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:169: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "Camera initialization failed: ${exc.message}"
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:259: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                        statusTextView.text = "✓ Document captured!\nReview information..."
+                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:259: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                        statusTextView.text = "✓ Document captured!\nReview information..."
+                                               ~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/CameraActivity.kt:259: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                        statusTextView.text = "✓ Document captured!\nReview information..."
+                                                                     ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/ConfirmationActivity.kt:312: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                docNumberView.text = "(not detected)"
+                                      ~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/ConfirmationActivity.kt:322: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                dobView.text = "(not detected)"
+                                ~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/ConfirmationActivity.kt:332: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                expiryView.text = "(not detected)"
+                                   ~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/MainActivity.kt:140: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                errorMessage.text = "PACE authentication failed: $paceError"
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/MainActivity.kt:140: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                errorMessage.text = "PACE authentication failed: $paceError"
+                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/MainActivity.kt:142: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                errorMessage.text = "No data could be read from the NFC chip. Please try again."
+                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:151: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        titleTextView.text = "Scan NFC Chip"
+                              ~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:157: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = "✓ Ready for NFC\n\nTap 'START NFC SCAN' button to begin"
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:157: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "✓ Ready for NFC\n\nTap 'START NFC SCAN' button to begin"
+                                   ~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:157: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "✓ Ready for NFC\n\nTap 'START NFC SCAN' button to begin"
+                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:160: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = "Ready to scan NFC\n\nTap 'START NFC SCAN' button to begin"
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:160: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "Ready to scan NFC\n\nTap 'START NFC SCAN' button to begin"
+                                   ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:160: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "Ready to scan NFC\n\nTap 'START NFC SCAN' button to begin"
+                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:212: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                statusTextView.text = "✓ BAC Updated\n\nTap 'START NFC SCAN' to try again"
+                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:212: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "✓ BAC Updated\n\nTap 'START NFC SCAN' to try again"
+                                       ~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:212: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "✓ BAC Updated\n\nTap 'START NFC SCAN' to try again"
+                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:236: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                statusTextView.text = "NFC is disabled"
+                                       ~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:242: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = "✓ NFC Enabled\n\nHold phone over NFC chip..."
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:242: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "✓ NFC Enabled\n\nHold phone over NFC chip..."
+                                   ~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:242: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "✓ NFC Enabled\n\nHold phone over NFC chip..."
+                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:250: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = "Error: ${e.message}"
+                                  ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:250: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = "Error: ${e.message}"
+                                   ~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:347: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "Authenticating with BAC..."
+                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:433: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                        statusTextView.text = "❌ Read failed:\n${passportData.error}"
+                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:433: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                        statusTextView.text = "❌ Read failed:\n${passportData.error}"
+                                               ~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:445: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                    statusTextView.text = "❌ Error:\n${e.message}"
+                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:445: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+                    statusTextView.text = "❌ Error:\n${e.message}"
+                                           ~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:476: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = statusTextView.text.toString() + "\n→ $message"
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:476: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = statusTextView.text.toString() + "\n→ $message"
+                                                                   ~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:491: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = statusTextView.text.toString() + "\n✗ ERROR: $message"
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:491: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            statusTextView.text = statusTextView.text.toString() + "\n✗ ERROR: $message"
+                                                                   ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/NFCProgressActivity.kt:491: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            statusTextView.text = statusTextView.text.toString() + "\n✗ ERROR: $message"
+                                                                      ~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/java/com/trustnetid/app/PassportConfirmationActivity.kt:76: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        findViewById<TextView>(R.id.fullNameValue).text = "$firstName $lastName"
+                                                          ~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SetTextI18n":
+   When calling TextView#setText
+   * Never call Number#toString() to format numbers; it will not handle
+   fraction separators and locale-specific digits properly. Consider using
+   String#format with proper format specifications (%d or %f) instead.
+   * Do not pass a string literal (e.g. "Hello") to display text. Hardcoded
+   text can not be properly translated to other languages. Consider using
+   Android resource strings instead.
+   * Do not build messages by concatenating text chunks. Such messages can not
+   be properly translated.
+
+   https://developer.android.com/guide/topics/resources/localization.html
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_camera.xml:19: Warning: Hardcoded string "Capture Document", should use @string resource [HardcodedText]
+        android:text="Capture Document"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_camera.xml:67: Warning: Hardcoded string "Position document in frame...", should use @string resource [HardcodedText]
+            android:text="Position document in frame..."
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:25: Warning: Hardcoded string "Verify Document Information", should use @string resource [HardcodedText]
+            android:text="Verify Document Information"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:33: Warning: Hardcoded string "Please verify the MRZ extracted from your document matches the physical document", should use @string resource [HardcodedText]
+            android:text="Please verify the MRZ extracted from your document matches the physical document"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:65: Warning: Hardcoded string "MRZ Line 1", should use @string resource [HardcodedText]
+                    android:text="MRZ Line 1"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:74: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:96: Warning: Hardcoded string "MRZ Line 2", should use @string resource [HardcodedText]
+                    android:text="MRZ Line 2"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:105: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:127: Warning: Hardcoded string "MRZ Line 3", should use @string resource [HardcodedText]
+                    android:text="MRZ Line 3"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:136: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:148: Warning: Hardcoded string "(Optional - Some documents have a third line)", should use @string resource [HardcodedText]
+                    android:text="(Optional - Some documents have a third line)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:167: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                    android:text="Document Number"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:176: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:196: Warning: Hardcoded string "Date of Birth (YYMMDD)", should use @string resource [HardcodedText]
+                    android:text="Date of Birth (YYMMDD)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:205: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:225: Warning: Hardcoded string "Date of Expiry (YYMMDD)", should use @string resource [HardcodedText]
+                    android:text="Date of Expiry (YYMMDD)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:234: Warning: Hardcoded string "(not detected)", should use @string resource [HardcodedText]
+                    android:text="(not detected)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:244: Warning: Hardcoded string "BAC (Basic Access Control) uses these three values to derive encryption keys for chip authentication.", should use @string resource [HardcodedText]
+                    android:text="BAC (Basic Access Control) uses these three values to derive encryption keys for chip authentication."
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:263: Warning: Hardcoded string "BAC Password Components (with Check Digits)", should use @string resource [HardcodedText]
+                    android:text="BAC Password Components (with Check Digits)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:272: Warning: Hardcoded string "Loading BAC components...", should use @string resource [HardcodedText]
+                    android:text="Loading BAC components..."
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:292: Warning: Hardcoded string "Final BAC Password (24 Characters)", should use @string resource [HardcodedText]
+                    android:text="Final BAC Password (24 Characters)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:301: Warning: Hardcoded string "BAC Password will appear here...", should use @string resource [HardcodedText]
+                    android:text="BAC Password will appear here..."
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:313: Warning: Hardcoded string "Verify all check digits match your physical passport MRZ Line 2 positions: 9 (doc), 19 (DOB), 27 (expiry)", should use @string resource [HardcodedText]
+                    android:text="Verify all check digits match your physical passport MRZ Line 2 positions: 9 (doc), 19 (DOB), 27 (expiry)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:338: Warning: Hardcoded string "Retry", should use @string resource [HardcodedText]
+            android:text="Retry"
+            ~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirm_mrz.xml:350: Warning: Hardcoded string "Confirm & Continue", should use @string resource [HardcodedText]
+            android:text="Confirm &amp; Continue"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:19: Warning: Hardcoded string "Verify Document Information", should use @string resource [HardcodedText]
+        android:text="Verify Document Information"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:29: Warning: Hardcoded string "Please review the extracted information. Edit any fields if needed, then tap Confirm to continue.", should use @string resource [HardcodedText]
+        android:text="Please review the extracted information. Edit any fields if needed, then tap Confirm to continue."
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:50: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                android:text="Document Number"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:60: Warning: Hardcoded string "Enter document number", should use @string resource [HardcodedText]
+                android:hint="Enter document number"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:70: Warning: Hardcoded string "Date of Birth (YYMMDD)", should use @string resource [HardcodedText]
+                android:text="Date of Birth (YYMMDD)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:80: Warning: Hardcoded string "YYMMDD (e.g., 290729)", should use @string resource [HardcodedText]
+                android:hint="YYMMDD (e.g., 290729)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:90: Warning: Hardcoded string "Expiry Date (YYMMDD)", should use @string resource [HardcodedText]
+                android:text="Expiry Date (YYMMDD)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:100: Warning: Hardcoded string "YYMMDD (e.g., 810409)", should use @string resource [HardcodedText]
+                android:hint="YYMMDD (e.g., 810409)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:110: Warning: Hardcoded string "CAN (optional)", should use @string resource [HardcodedText]
+                android:text="CAN (optional)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:120: Warning: Hardcoded string "Card Access Number (optional)", should use @string resource [HardcodedText]
+                android:hint="Card Access Number (optional)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:137: Warning: Hardcoded string "NFC Authentication (BAC Password Components)", should use @string resource [HardcodedText]
+                android:text="NFC Authentication (BAC Password Components)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:146: Warning: Hardcoded string "[Check digits will be shown here]", should use @string resource [HardcodedText]
+                android:text="[Check digits will be shown here]"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:157: Warning: Hardcoded string "Final BAC Password (24 chars)", should use @string resource [HardcodedText]
+                android:text="Final BAC Password (24 chars)"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:167: Warning: Hardcoded string "[Password will be shown here]", should use @string resource [HardcodedText]
+                android:text="[Password will be shown here]"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:191: Warning: Hardcoded string "Back to Camera", should use @string resource [HardcodedText]
+            android:text="Back to Camera"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_confirmation.xml:201: Warning: Hardcoded string "Confirm - Scan NFC", should use @string resource [HardcodedText]
+            android:text="Confirm - Scan NFC"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:14: Warning: Hardcoded string "Confirm Document Information", should use @string resource [HardcodedText]
+        android:text="Confirm Document Information"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:26: Warning: Hardcoded string "✓ Document scanned successfully", should use @string resource [HardcodedText]
+        android:text="✓ Document scanned successfully"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:49: Warning: Hardcoded string "Captured document", should use @string resource [HardcodedText]
+                android:contentDescription="Captured document"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:63: Warning: Hardcoded string "Card Access Number (CAN)", should use @string resource [HardcodedText]
+                    android:text="Card Access Number (CAN)"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:74: Warning: Hardcoded string "Enter 6-character CAN", should use @string resource [HardcodedText]
+                    android:hint="Enter 6-character CAN"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:94: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                    android:text="Document Number"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:123: Warning: Hardcoded string "Date of Birth", should use @string resource [HardcodedText]
+                    android:text="Date of Birth"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:152: Warning: Hardcoded string "Expiry Date", should use @string resource [HardcodedText]
+                    android:text="Expiry Date"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:187: Warning: Hardcoded string "Retake", should use @string resource [HardcodedText]
+            android:text="Retake"
+            ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_confirmation.xml:197: Warning: Hardcoded string "Confirm & Continue", should use @string resource [HardcodedText]
+            android:text="Confirm &amp; Continue"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_type.xml:19: Warning: Hardcoded string "Select document type", should use @string resource [HardcodedText]
+        android:text="Select document type"
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_type.xml:30: Warning: Hardcoded string "Identity Card", should use @string resource [HardcodedText]
+            android:text="Identity Card"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_document_type.xml:41: Warning: Hardcoded string "Passport", should use @string resource [HardcodedText]
+            android:text="Passport"
+            ~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_main.xml:34: Warning: Hardcoded string "Ready to scan government ID", should use @string resource [HardcodedText]
+            android:text="Ready to scan government ID"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_main.xml:47: Warning: Hardcoded string "Tap to Scan NFC", should use @string resource [HardcodedText]
+            android:text="Tap to Scan NFC"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_main.xml:70: Warning: Hardcoded string "Scan results will appear here", should use @string resource [HardcodedText]
+                    android:text="Scan results will appear here"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_main.xml:85: Warning: Hardcoded string "Position NFC tag near device antenna. Upper back of device.", should use @string resource [HardcodedText]
+            android:text="Position NFC tag near device antenna. Upper back of device."
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_nfc_progress.xml:26: Warning: Hardcoded string "Ready to Scan NFC", should use @string resource [HardcodedText]
+            android:text="Ready to Scan NFC"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_nfc_progress.xml:37: Warning: Hardcoded string "📱", should use @string resource [HardcodedText]
+            android:text="📱"
+            ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_nfc_progress.xml:46: Warning: Hardcoded string "Place phone on NFC chip to scan", should use @string resource [HardcodedText]
+            android:text="Place phone on NFC chip to scan"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_nfc_progress.xml:65: Warning: Hardcoded string "Edit BAC Password (if OCR wrong)", should use @string resource [HardcodedText]
+            android:text="Edit BAC Password (if OCR wrong)"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_nfc_progress.xml:76: Warning: Hardcoded string "Start NFC Scan", should use @string resource [HardcodedText]
+            android:text="Start NFC Scan"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:25: Warning: Hardcoded string "Verify Extracted Information", should use @string resource [HardcodedText]
+            android:text="Verify Extracted Information"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:33: Warning: Hardcoded string "Please verify the information extracted from your document", should use @string resource [HardcodedText]
+            android:text="Please verify the information extracted from your document"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:65: Warning: Hardcoded string "✓ ", should use @string resource [HardcodedText]
+                    android:text="✓ "
+                    ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:73: Warning: Hardcoded string "Successfully read NFC chip", should use @string resource [HardcodedText]
+                    android:text="Successfully read NFC chip"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:90: Warning: Hardcoded string "Personal Information", should use @string resource [HardcodedText]
+                    android:text="Personal Information"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:105: Warning: Hardcoded string "Full Name", should use @string resource [HardcodedText]
+                        android:text="Full Name"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:127: Warning: Hardcoded string "Date of Birth", should use @string resource [HardcodedText]
+                        android:text="Date of Birth"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:149: Warning: Hardcoded string "Gender", should use @string resource [HardcodedText]
+                        android:text="Gender"
+                        ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:170: Warning: Hardcoded string "Nationality", should use @string resource [HardcodedText]
+                        android:text="Nationality"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:197: Warning: Hardcoded string "Document Information", should use @string resource [HardcodedText]
+                    android:text="Document Information"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:212: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                        android:text="Document Number"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:234: Warning: Hardcoded string "Date of Expiry", should use @string resource [HardcodedText]
+                        android:text="Date of Expiry"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:268: Warning: Hardcoded string "Cancel", should use @string resource [HardcodedText]
+            android:text="Cancel"
+            ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_passport_confirmation.xml:279: Warning: Hardcoded string "Confirm", should use @string resource [HardcodedText]
+            android:text="Confirm"
+            ~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:29: Warning: Hardcoded string "Scanned Document Information", should use @string resource [HardcodedText]
+                android:text="Scanned Document Information"
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:47: Warning: Hardcoded string "✓ ", should use @string resource [HardcodedText]
+                    android:text="✓ "
+                    ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:55: Warning: Hardcoded string "Successfully detected NFC chip", should use @string resource [HardcodedText]
+                    android:text="Successfully detected NFC chip"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:71: Warning: Hardcoded string "Personal Information", should use @string resource [HardcodedText]
+                    android:text="Personal Information"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:91: Warning: Hardcoded string "First Name", should use @string resource [HardcodedText]
+                            android:text="First Name"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:99: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:113: Warning: Hardcoded string "Last Name", should use @string resource [HardcodedText]
+                            android:text="Last Name"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:121: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:135: Warning: Hardcoded string "Gender", should use @string resource [HardcodedText]
+                            android:text="Gender"
+                            ~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:143: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:157: Warning: Hardcoded string "Nationality", should use @string resource [HardcodedText]
+                            android:text="Nationality"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:165: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                            android:text="[Protected - Requires PACE]"
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:183: Warning: Hardcoded string "Document Details", should use @string resource [HardcodedText]
+                    android:text="Document Details"
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:198: Warning: Hardcoded string "Document Number", should use @string resource [HardcodedText]
+                        android:text="Document Number"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:206: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:220: Warning: Hardcoded string "Birth Date", should use @string resource [HardcodedText]
+                        android:text="Birth Date"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:228: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:241: Warning: Hardcoded string "Expiry Date", should use @string resource [HardcodedText]
+                        android:text="Expiry Date"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:249: Warning: Hardcoded string "[Protected - Requires PACE]", should use @string resource [HardcodedText]
+                        android:text="[Protected - Requires PACE]"
+                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:267: Warning: Hardcoded string "⚠ ", should use @string resource [HardcodedText]
+                    android:text="⚠ "
+                    ~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:276: Warning: Hardcoded string "PACE authentication failed. Please try again.", should use @string resource [HardcodedText]
+                    android:text="PACE authentication failed. Please try again."
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:296: Warning: Hardcoded string "SCAN AGAIN", should use @string resource [HardcodedText]
+            android:text="SCAN AGAIN"
+            ~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/header_version.xml:16: Warning: Hardcoded string "TrustNet", should use @string resource [HardcodedText]
+        android:text="TrustNet"
+        ~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "HardcodedText":
+   Hardcoding text attributes directly in layout files is bad for several
+   reasons:
+
+   * When creating configuration variations (for example for landscape or
+   portrait) you have to repeat the actual text (and keep it up to date when
+   making changes)
+
+   * The application cannot be translated to other languages by just adding
+   new translations for existing string resources.
+
+   There are quickfixes to automatically extract this hardcoded string into a
+   resource lookup.
+
+/home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/res/layout/activity_scan_result.xml:270: Warning: Consider replacing android:layout_marginRight with android:layout_marginEnd="8dp" to better support right-to-left layouts [RtlHardcoded]
+                    android:layout_marginRight="8dp" />
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "RtlHardcoded":
+   Using Gravity#LEFT and Gravity#RIGHT can lead to problems when a layout is
+   rendered in locales where text flows from right to left. Use Gravity#START
+   and Gravity#END instead. Similarly, in XML gravity and layout_gravity
+   attributes, use start rather than left.
+
+   For XML attributes such as paddingLeft and layout_marginLeft, use
+   paddingStart and layout_marginStart. NOTE: If your minSdkVersion is less
+   than 17, you should add both the older left/right attributes as well as the
+   new start/end attributes. On older platforms, where RTL is not supported
+   and the start/end attributes are unknown and therefore ignored, you need
+   the older left/right attributes. There is a separate lint check which
+   catches that type of error.
+
+   (Note: For Gravity#LEFT and Gravity#START, you can use these constants even
+   when targeting older platforms, because the start bitmask is a superset of
+   the left bitmask. Therefore, you can use gravity="start" rather than
+   gravity="left|start".)
+
+0 errors, 211 warnings

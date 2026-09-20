@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TrustNet</string>
-    <string name="splash_subtitle">Decentralized Trust Network</string>
+    <string name="app_name">TrustNetID</string>
+    <string name="splash_subtitle">Identity Verification</string>
     <string name="preview_image">Document preview</string>
 </resources>

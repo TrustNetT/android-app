@@ -68,7 +68,7 @@ MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] /home/j
 MERGED from [androidx.print:print:1.0.0] /home/jcgarcia/.gradle/caches/transforms-4/829ea443e463f5870f4bb3c91f5af2ae/transformed/print-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.android.odml:image:1.0.0-beta1] /home/jcgarcia/.gradle/caches/transforms-4/8d419c3710a7ca885cdf4a016ff72448/transformed/jetified-image-1.0.0-beta1/AndroidManifest.xml:2:1-9:12
 	package
-		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:3:5-31
+		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:3:5-33
 		INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml
@@ -153,7 +153,7 @@ MERGED from [com.google.android.odml:image:1.0.0-beta1] /home/jcgarcia/.gradle/c
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:18:9-35
 	android:theme
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:23:9-49
-activity#com.trustnet.app.SplashActivity
+activity#com.trustnetid.app.SplashActivity
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:25:9-32:20
 	android:exported
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:27:13-36
@@ -169,7 +169,7 @@ category#android.intent.category.LAUNCHER
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:30:17-77
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:30:27-74
-activity#com.trustnet.app.MainActivity
+activity#com.trustnetid.app.MainActivity
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:34:9-56:20
 	android:launchMode
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:37:13-43
@@ -177,31 +177,31 @@ ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/Android
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:36:13-36
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:35:13-41
-activity#com.trustnet.app.DocumentTypeActivity
+activity#com.trustnetid.app.DocumentTypeActivity
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:59:9-61:40
 	android:exported
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:61:13-37
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:60:13-49
-activity#com.trustnet.app.CameraActivity
+activity#com.trustnetid.app.CameraActivity
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:64:9-66:40
 	android:exported
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:66:13-37
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:65:13-43
-activity#com.trustnet.app.ConfirmationActivity
+activity#com.trustnetid.app.ConfirmationActivity
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:69:9-71:40
 	android:exported
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:71:13-37
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:70:13-49
-activity#com.trustnet.app.NFCProgressActivity
+activity#com.trustnetid.app.NFCProgressActivity
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:74:9-76:40
 	android:exported
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:76:13-37
 	android:name
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:75:13-48
-activity#com.trustnet.app.PassportConfirmationActivity
+activity#com.trustnetid.app.PassportConfirmationActivity
 ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:79:9-81:40
 	android:exported
 		ADDED from /home/jcgarcia/wip/priv/trustnet-wip/android-app/app/src/main/AndroidManifest.xml:81:13-37
@@ -445,7 +445,7 @@ ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-
 		ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
 	android:name
 		ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
-permission#com.trustnet.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+permission#com.trustnetid.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
 	android:protectionLevel
 		ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
@@ -455,7 +455,7 @@ uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
-uses-permission#com.trustnet.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission#com.trustnetid.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.12.0] /home/jcgarcia/.gradle/caches/transforms-4/db5806773ce8a9e2b4e464b84c8cadea/transformed/core-1.12.0/AndroidManifest.xml:26:22-94

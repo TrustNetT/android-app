@@ -1,23 +1,48 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
 }
 
+// Read version from version.properties
+val versionFile = rootProject.file("version.properties")
+val versionProperties = Properties()
+if (versionFile.exists()) {
+    versionProperties.load(versionFile.inputStream())
+}
+val baseVersion = versionProperties.getProperty("VERSION_BASE", "0.1.0")
+
 android {
-    namespace = "com.trustnet.app"
+    namespace = "com.trustnetid.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.trustnet.app"
+        applicationId = "com.trustnetid.app"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = baseVersion
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
+        debug {
+            // Append "-dev" to version for debug builds
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-dev"
+            buildConfigField("String", "APP_VERSION", "\"$baseVersion-dev\"")
+            buildConfigField("String", "VERSION_NAME", "\"$baseVersion-dev\"")
+        }
+        
         release {
             isMinifyEnabled = false
+            // Release version has no suffix (production ready)
+            buildConfigField("String", "APP_VERSION", "\"$baseVersion\"")
+            buildConfigField("String", "VERSION_NAME", "\"$baseVersion\"")
         }
     }
 
