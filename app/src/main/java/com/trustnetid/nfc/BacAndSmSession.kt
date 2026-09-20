@@ -371,12 +371,13 @@ class BacAndSmSession(
         val plainSelect = byteArrayOf(
             0x00, 0xA4.toByte(), 0x02, 0x0C, 0x02, 0x01, 0x1E
         )
+        Log.d(TAG, "  DEBUG-SELECT: plainSelect=${plainSelect.toHexString()}")
         
         val smApdu = wrapInSM(plainSelect)
-        Log.d(TAG, "  SM-wrapped APDU: ${smApdu.toHexString()}")
+        Log.d(TAG, "  DEBUG-SELECT: SM-wrapped APDU=${smApdu.toHexString()}")
         
         val response = isoDep.transceive(smApdu)
-        Log.d(TAG, "  Response: ${response.toHexString()}")
+        Log.d(TAG, "  DEBUG-SELECT: Response=${response.toHexString()}")
         
         if (response.size >= 2) {
             val sw = ((response[response.size - 2].toInt() and 0xFF) shl 8) or
@@ -453,13 +454,19 @@ class BacAndSmSession(
         val p1 = plainApdu[2]
         val p2 = plainApdu[3]
         
+        Log.d(TAG, "  DEBUG-APDU-INPUT: plainApdu.size=${plainApdu.size}, hex=${plainApdu.toHexString()}")
+        
         var dataPayload = ByteArray(0)
         if (plainApdu.size > 5) {
             val lc = plainApdu[4].toInt() and 0xFF
+            Log.d(TAG, "  DEBUG-APDU-LC: lc=$lc, checking range [5, ${5 + lc})")
             require(plainApdu.size >= 5 + lc) {
                 "APDU length (${plainApdu.size}) smaller than Lc ($lc)"
             }
             dataPayload = plainApdu.copyOfRange(5, 5 + lc)
+            Log.d(TAG, "  DEBUG-APDU-PAYLOAD: extracted ${dataPayload.size} bytes: ${dataPayload.toHexString()}")
+        } else {
+            Log.d(TAG, "  DEBUG-APDU-PAYLOAD: no payload (size=${plainApdu.size} <= 5)")
         }
         
         // Step 3: Derive IV from SSC
@@ -474,10 +481,12 @@ class BacAndSmSession(
         // Step 5: Build DO8E (MAC Data Object)
         // CRITICAL: Per ICAO 9303 Section 7.2.3.1, MAC input is:
         // N = M(SSC || CLA || INS || P1 || P2 || Lc || DO87)
-        // where Lc is the length of DO87 (not including DO8E yet)
-        val lcByte = do87.size.toByte()
+        // where Lc is the LENGTH VALUE from DO87 TLV (do87[1]), NOT the total TLV size
+        val lcByte = do87[1]  // Extract length byte from DO87 TLV structure
         val macInput = ssc!! + byteArrayOf(cla, ins, p1, p2, lcByte) + do87
         val macValue = computeMAC(macInput, kmac, iv)
+        Log.d(TAG, "SM MAC input: ${macInput.toHexString()}")
+        Log.d(TAG, "Lc byte used: 0x${String.format("%02X", lcByte)}")
         Log.d(TAG, "    [DO8E] MAC: ${macValue.toHexString()}")
         val do8e = buildTLV(DO8E_TAG, macValue)
         
