@@ -318,6 +318,7 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback, Pass
      * Reads MRZ directly from chip using BAC authentication
      */
     override fun onTagDiscovered(tag: Tag?) {
+        Log.d(TAG, "🔴🔴🔴 onTagDiscovered FIRED 🔴🔴🔴")
         if (tag == null || isProcessing) {
             Log.w(TAG, "Tag is null or already processing")
             runOnUiThread {

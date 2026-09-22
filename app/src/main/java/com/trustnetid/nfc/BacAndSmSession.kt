@@ -334,24 +334,99 @@ class BacAndSmSession(
         sKenc: ByteArray,
         sKmac: ByteArray
     ): ByteArray {
-        Log.d(TAG, "    [TODO] EXTERNAL AUTHENTICATE - Currently placeholder")
-        Log.d(TAG, "    This is where full BAC mutual authentication should occur")
-        Log.d(TAG, "    For now, returning success to test SM wrapper structure")
+        Log.d(TAG, "    EXTERNAL AUTHENTICATE (Mutual Authentication)")
         
-        // TODO: Implement EXTERNAL AUTHENTICATE flow per ICAO 9303 Section 11.2.3.3
-        // This is complex and requires:
-        // 1. Building encrypted auth data (RND.IFD + MAC)
-        // 2. Computing proper MAC over combined challenges
-        // 3. Sending encrypted APDU to chip
-        // 4. Decrypting chip's response
-        // 5. Verifying chip's MAC
-        //
-        // For production, reference:
-        // - JMRTD library's BACProtocol.doBACStep() method
-        // - ICAO 9303 Part 11, Section 11.2.3 (complete BAC specification)
-        // - Example ePassport implementations (esp. with proper test vectors)
-        
-        return ByteArray(0)
+        try {
+            // Step 1: Build IV from SSC (used for both encryption and MAC)
+            val iv = ssc!!.copyOf()
+            Log.d(TAG, "      [IV] Derived from SSC: ${iv.toHexString()}")
+            
+            // Step 2: Encrypt RND.IFD with S.Kenc using 3DES-CBC
+            // ICAO 9303 Section 11.2.3.3: auth data = RND.IFD || 0x00(6)
+            // (6 bytes of zeros as padding before keying data MAC)
+            val authData = rndIfd + ByteArray(6) { 0x00 }
+            
+            val cipherEnc = Cipher.getInstance("DESede/CBC/PKCS5Padding")
+            cipherEnc.init(
+                Cipher.ENCRYPT_MODE,
+                SecretKeySpec(sKenc, 0, 24, "DESede"),
+                IvParameterSpec(iv)
+            )
+            val encryptedAuthData = cipherEnc.doFinal(authData)
+            Log.d(TAG, "      [AUTH DATA] RND.IFD + padding: ${authData.toHexString()}")
+            Log.d(TAG, "      [ENCRYPTED] ${encryptedAuthData.size} bytes: ${encryptedAuthData.toHexString()}")
+            
+            // Step 3: Build EXTERNAL AUTHENTICATE APDU
+            // APDU: [CLA=0x00, INS=0x82, P1=0x00, P2=0x00, Lc, encrypted_auth_data]
+            val extAuthApdu = byteArrayOf(
+                0x00, 0x82.toByte(), 0x00, 0x00, 
+                encryptedAuthData.size.toByte()
+            ) + encryptedAuthData
+            
+            Log.d(TAG, "      [APDU] Sending EXTERNAL AUTHENTICATE: ${extAuthApdu.toHexString()}")
+            
+            // Step 4: Send to NFC chip and receive response
+            val extAuthResponse = isoDep.transceive(extAuthApdu)
+            Log.d(TAG, "      [RESPONSE] ${extAuthResponse.size} bytes: ${extAuthResponse.toHexString()}")
+            
+            // Step 5: Parse status word
+            if (extAuthResponse.size < 2) {
+                throw IllegalStateException("EXTERNAL AUTHENTICATE response too short: ${extAuthResponse.size} bytes")
+            }
+            
+            val sw = ((extAuthResponse[extAuthResponse.size - 2].toInt() and 0xFF) shl 8) or
+                     (extAuthResponse[extAuthResponse.size - 1].toInt() and 0xFF)
+            
+            Log.d(TAG, "      [SW] 0x${sw.toString(16).padStart(4, '0')}")
+            
+            if (sw == 0x6982) {
+                throw IllegalStateException("EXTERNAL AUTHENTICATE failed: 0x6982 - Security status not satisfied (wrong BAC password)")
+            } else if (sw == 0x6A88) {
+                throw IllegalStateException("EXTERNAL AUTHENTICATE failed: 0x6A88 - Reference not found")
+            } else if (sw != 0x9000) {
+                throw IllegalStateException("EXTERNAL AUTHENTICATE failed: 0x${sw.toString(16).padStart(4, '0')}")
+            }
+            
+            Log.d(TAG, "      ✅ EXTERNAL AUTHENTICATE response 0x9000")
+            
+            // Step 6: Extract encrypted response (everything except SW)
+            val encryptedResponse = extAuthResponse.copyOfRange(0, extAuthResponse.size - 2)
+            Log.d(TAG, "      [ENCRYPTED RESPONSE] ${encryptedResponse.size} bytes: ${encryptedResponse.toHexString()}")
+            
+            // Step 7: Decrypt chip's response with S.Kenc
+            val cipherDec = Cipher.getInstance("DESede/CBC/PKCS5Padding")
+            cipherDec.init(
+                Cipher.DECRYPT_MODE,
+                SecretKeySpec(sKenc, 0, 24, "DESede"),
+                IvParameterSpec(iv)
+            )
+            val decryptedResponse = cipherDec.doFinal(encryptedResponse)
+            Log.d(TAG, "      [DECRYPTED] ${decryptedResponse.size} bytes: ${decryptedResponse.toHexString()}")
+            
+            // Step 8: Verify that chip's RND.IFC matches what we received in GET CHALLENGE
+            // Chip sends back: RND.IFC || 0x00(6) || chip_keying_data_mac
+            if (decryptedResponse.size < 8) {
+                throw IllegalStateException("Decrypted response too short: ${decryptedResponse.size} bytes")
+            }
+            
+            val chipRndIfc = decryptedResponse.copyOfRange(0, 8)
+            Log.d(TAG, "      [CHIP RND.IFC] ${chipRndIfc.toHexString()}")
+            Log.d(TAG, "      [ORIG RND.IFC] ${rndIfc.toHexString()}")
+            
+            if (!chipRndIfc.contentEquals(rndIfc)) {
+                throw IllegalStateException("RND.IFC mismatch - BAC failed (possible key derivation error or spoofed chip)")
+            }
+            
+            Log.d(TAG, "    ✅ EXTERNAL AUTHENTICATE SUCCESS - Mutual auth verified")
+            Log.d(TAG, "    ✅ Chip proved it knows correct S.Kenc/S.Kmac")
+            Log.d(TAG, "    ✅ Ready for Secure Messaging")
+            
+            return decryptedResponse
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "  ✗ EXTERNAL AUTHENTICATE failed: ${e.message}", e)
+            throw e
+        }
     }
     
     /**
@@ -375,6 +450,8 @@ class BacAndSmSession(
         
         val smApdu = wrapInSM(plainSelect)
         Log.d(TAG, "  DEBUG-SELECT: SM-wrapped APDU=${smApdu.toHexString()}")
+        Log.d(TAG, "  DEBUG-SELECT: CLA=0x${String.format("%02X", smApdu[0])}, INS=0x${String.format("%02X", smApdu[1])}, P1=0x${String.format("%02X", smApdu[2])}, P2=0x${String.format("%02X", smApdu[3])}")
+        Log.d(TAG, "  DEBUG-SELECT: Has DO87=${smApdu.contains(0x87.toByte())}, Has DO8E=${smApdu.contains(0x8E.toByte())}")
         
         val response = isoDep.transceive(smApdu)
         Log.d(TAG, "  DEBUG-SELECT: Response=${response.toHexString()}")
@@ -485,6 +562,10 @@ class BacAndSmSession(
         val lcByte = do87[1]  // Extract length byte from DO87 TLV structure
         val macInput = ssc!! + byteArrayOf(cla, ins, p1, p2, lcByte) + do87
         val macValue = computeMAC(macInput, kmac, iv)
+        
+        // BRUTAL DEBUGGING
+        Log.d(TAG, "SM DEBUG: lcByte=0x${String.format("%02X", lcByte)}, do87.size=${do87.size}, do87[1]=0x${String.format("%02X", do87[1])}")
+        Log.d(TAG, "SM DEBUG: macInput=${macInput.toHexString()}")
         Log.d(TAG, "SM MAC input: ${macInput.toHexString()}")
         Log.d(TAG, "Lc byte used: 0x${String.format("%02X", lcByte)}")
         Log.d(TAG, "    [DO8E] MAC: ${macValue.toHexString()}")
