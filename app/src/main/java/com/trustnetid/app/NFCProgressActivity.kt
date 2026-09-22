@@ -51,7 +51,7 @@ class NFCProgressActivity : AppCompatActivity(), NfcAdapter.ReaderCallback, Pass
     
     // DEBUG MODE: Set this to true to use hardcoded MRZ instead of OCR
     // This test isolates whether the failure is OCR or the authentication logic
-    private val DEBUG_USE_HARDCODED_MRZ = false
+    private val DEBUG_USE_HARDCODED_MRZ = true  // ✅ ENABLED for autonomous NFC testing
     private val DEBUG_HARDCODED_BAC_PASSWORD = "PAI917686865103182904102"  // Edit this to test different MRZ values
     
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -342,18 +342,16 @@ class BacAndSmSession(
             Log.d(TAG, "      [IV] Derived from SSC: ${iv.toHexString()}")
             
             // Step 2: Encrypt RND.IFD with S.Kenc using 3DES-CBC
-            // ICAO 9303 Section 11.2.3.3: auth data = RND.IFD || 0x00(6)
-            // (6 bytes of zeros as padding before keying data MAC)
-            val authData = rndIfd + ByteArray(6) { 0x00 }
-            
-            val cipherEnc = Cipher.getInstance("DESede/CBC/PKCS5Padding")
+            // ICAO 9303 Section 11.2.3.3: EXTERNAL AUTHENTICATE sends just encrypted RND.IFD
+            // RND.IFD is 8 bytes, which is exactly one 3DES block - no padding needed
+            val cipherEnc = Cipher.getInstance("DESede/CBC/NoPadding")
             cipherEnc.init(
                 Cipher.ENCRYPT_MODE,
                 SecretKeySpec(sKenc, 0, 24, "DESede"),
                 IvParameterSpec(iv)
             )
-            val encryptedAuthData = cipherEnc.doFinal(authData)
-            Log.d(TAG, "      [AUTH DATA] RND.IFD + padding: ${authData.toHexString()}")
+            val encryptedAuthData = cipherEnc.doFinal(rndIfd)
+            Log.d(TAG, "      [RND.IFD] (plaintext): ${rndIfd.toHexString()}")
             Log.d(TAG, "      [ENCRYPTED] ${encryptedAuthData.size} bytes: ${encryptedAuthData.toHexString()}")
             
             // Step 3: Build EXTERNAL AUTHENTICATE APDU
@@ -393,8 +391,8 @@ class BacAndSmSession(
             val encryptedResponse = extAuthResponse.copyOfRange(0, extAuthResponse.size - 2)
             Log.d(TAG, "      [ENCRYPTED RESPONSE] ${encryptedResponse.size} bytes: ${encryptedResponse.toHexString()}")
             
-            // Step 7: Decrypt chip's response with S.Kenc
-            val cipherDec = Cipher.getInstance("DESede/CBC/PKCS5Padding")
+            // Step 7: Decrypt chip's response with S.Kenc (NoPadding, expecting exactly 8 bytes)
+            val cipherDec = Cipher.getInstance("DESede/CBC/NoPadding")
             cipherDec.init(
                 Cipher.DECRYPT_MODE,
                 SecretKeySpec(sKenc, 0, 24, "DESede"),
